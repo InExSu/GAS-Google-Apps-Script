@@ -1,3 +1,6 @@
+import { Array1D_2_HeadNumbers_LookUp } from './LibraryBigInExSu.js';
+import { Array2D_2_Map } from './LibraryBigInExSu.js';
+
 function arrays2dDiff_Test() {
     // Вернуть массив 2мерный было/стало по ключевому полю
     // в одинаковых столбцах
@@ -5,14 +8,14 @@ function arrays2dDiff_Test() {
     let arr1, arr2, row1Head, row2Head;
 
     arr1 = [['ст1', 'ст2'], ['val11', 'val12']];
-    arr2 = [['ст1', 'ст2'], ['val21', 'val22']];
+    arr2 = [['ст1', 'ст2'], ['val11', 'val22']];
 
     // массив соответствия номеров заголовков столбцов
     let a11Head = array2dRow2Array1(arr1, 1)
     let a12Head = array2dRow2Array1(arr2, 1)
 
     let arrCols = Array1D_2_HeadNumbers_LookUp(a11Head, a12Head);
-    let arrKeys = Array2D_2_Map(arr2, colKey);
+    let arrKeys = Array2D_2_Map(arr2, 1);
 
     let arr3 = arrays2dDiff(arr1, arr2, arrCols, arrKeys);
 }
@@ -86,5 +89,5 @@ function array2dRow2Array1(arr2, row) {
 }
 
 // Array1D_2_HeadNumbers_LookUp();
-// arrays2dDiff_Test();
+arrays2dDiff_Test();
 

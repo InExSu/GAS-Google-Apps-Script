@@ -10,5 +10,6 @@
   "description": "",
   "dependencies": {
     "@types/google-apps-script": "^1.0.44"
-  }
+  },
+  "type": "module"
 }
