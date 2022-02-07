@@ -57,7 +57,25 @@ function arrays2dDiffAction(arr1, arr2, arrKeys, arr1Cols) {
     return arr3;
 }
 
-function array2dRow2Array1(arr2, row2Head) {
+function array2dRow2Array1_Test() {
+    let a2 = [[1, 2], [3, 4]];
+    let a1 = array2dRow2Array1(a2, 0);
+    if (a1[0][0] !== 1) {
+        return array2dRow2Array1_Test + " " + false;
+    }
+    return array2dRow2Array1_Test + " " + true;
+}
+
+function array2dRow2Array1(arr2, row) {
     // строку массива 2мерного в массив 1мерный
 
+    let a1 = [];
+
+    for (let col = 0; col < arr2.length; col++) {
+
+        a1.push(arr2[row][col]);
+    }
+    return a1;
 }
+
+array2dRow2Array1_Test();
