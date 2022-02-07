@@ -254,7 +254,7 @@ function Array2D_2_Map_Test() {
     Logger.log('Array2D_2_Map_Test = Ошибка');
   }
   // тестирую повтор ключа
-  let a2 = [
+  a2 = [
     [0, 1, 2], // строка 0  
     [0, 4, 5] // строка 1  
   ];
