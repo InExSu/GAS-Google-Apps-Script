@@ -1,14 +1,17 @@
 function arrays2dDiff(arr1, arr2, row1Head, row2Head) {
     // массив соответствия номеров заголовков столбцов
+
     let a11Head = array2dRow2Array1(arr1, row1Head)
     let a12Head = array2dRow2Array1(arr2, row2Head)
+
     let arrCols = Array1D_2_HeadNumbers_LookUp(a11Head, a12Head);
     let arrKeys = Array2D_2_Map(arr2, colKey);
+
     return arrays2dDiffAction(arr1, arr2, arrCols, arrKeys);
 }
 
-function arrays2dDiffAction(arr1, arr2, , arrKeys, arr1Cols) {
-    // Вернуть разницу двух массивов по ключевому полю
+function arrays2dDiffAction(arr1, arr2, arrKeys, arr1Cols) {
+    // Вернуть массив 2мерный было/стало по ключевому полю
     // в одинаковых столбцах
 
     // массив 1 - сводная, массив 2 - Битрикс24
@@ -28,7 +31,7 @@ function arrays2dDiffAction(arr1, arr2, , arrKeys, arr1Cols) {
         val1,
         val2;
 
-
+    arr3 = JSON.parse(JSON.stringify(arr2));
 
     for (let row1 = 0; row1 < arr1.length; row1++) {
         for (let indx = 0; indx <= arr1Cols.length; col1++) {

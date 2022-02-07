@@ -406,7 +406,7 @@ function Array2d_ColumnsEquals_RowsDelete(a2d_In) {
   // массив удалить строки массива 2мерного с одинаковыми значениями
 
   // копировать массив 2мерный не просто
-  var a2d = JSON.parse(JSON.stringify(a2d_In))
+  var a2d = JSON.parse(JSON.stringify(a2d_In));
 
   var val = '';
   var equ = true;
