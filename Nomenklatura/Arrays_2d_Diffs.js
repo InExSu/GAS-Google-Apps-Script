@@ -1,17 +1,24 @@
-function arrays2dDiff(arr1, arr2, row1Head, row2Head) {
-    // массив соответствия номеров заголовков столбцов
+function arrays2dDiff_Test() {
+    // Вернуть массив 2мерный было/стало по ключевому полю
+    // в одинаковых столбцах
 
-    let a11Head = array2dRow2Array1(arr1, row1Head)
-    let a12Head = array2dRow2Array1(arr2, row2Head)
+    let arr1, arr2, row1Head, row2Head;
+
+    arr1 = [['ст1', 'ст2'], ['val11', 'val12']];
+    arr2 = [['ст1', 'ст2'], ['val21', 'val22']];
+
+    // массив соответствия номеров заголовков столбцов
+    let a11Head = array2dRow2Array1(arr1, 1)
+    let a12Head = array2dRow2Array1(arr2, 1)
 
     let arrCols = Array1D_2_HeadNumbers_LookUp(a11Head, a12Head);
     let arrKeys = Array2D_2_Map(arr2, colKey);
 
-    return arrays2dDiffAction(arr1, arr2, arrCols, arrKeys);
+    let arr3 = arrays2dDiff(arr1, arr2, arrCols, arrKeys);
 }
 
-function arrays2dDiffAction(arr1, arr2, arrKeys, arr1Cols) {
-    // Вернуть массив 2мерный было/стало по ключевому полю
+function arrays2dDiff(arr1, arr2, arrKeys, arr1Cols) {
+    // Вернуть массив 2мерный (по размерам arr2) было/стало по ключевому полю
     // в одинаковых столбцах
 
     // массив 1 - сводная, массив 2 - Битрикс24
@@ -60,10 +67,10 @@ function arrays2dDiffAction(arr1, arr2, arrKeys, arr1Cols) {
 function array2dRow2Array1_Test() {
     let a2 = [[1, 2], [3, 4]];
     let a1 = array2dRow2Array1(a2, 0);
-    if (a1[0][0] !== 1) {
-        return array2dRow2Array1_Test + " " + false;
+    if (a1[0] == 1) {
+        return array2dRow2Array1_Test + " " + true;
     }
-    return array2dRow2Array1_Test + " " + true;
+    return array2dRow2Array1_Test + " " + false;
 }
 
 function array2dRow2Array1(arr2, row) {
@@ -78,4 +85,4 @@ function array2dRow2Array1(arr2, row) {
     return a1;
 }
 
-array2dRow2Array1_Test();
+// array2dRow2Array1_Test();
