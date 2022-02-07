@@ -64,7 +64,7 @@ function Array2D_Update_by_Map(array2d_New, array2d_Old,
       row_New = map_codes.get(code);
 
       // проход по строкам массива соответствия номеров столбцов
-      for (let row_columns = 0; row_columns < array2d_columns.length; row_columns++) {
+      for (var row_columns = 0; row_columns < array2d_columns.length; row_columns++) {
 
         col_Old = array2d_columns[row_columns][0];
         col_New = array2d_columns[row_columns][1];
@@ -183,7 +183,7 @@ function Array2D_Column_Find_In_Row_Test() {
 function Array2D_Column_Find_In_Row(array2d, row, string_find) {
   // в двумернном массиве, в строке найти значение, вернуть номер столбца или -1
   var val = ''
-  for (let column = 0; column < array2d[0].length; column++) {
+  for (var column = 0; column < array2d[0].length; column++) {
     val = array2d[row][column];
     // Logger.log(val);
     if (array2d[row][column] == string_find) {
@@ -226,7 +226,7 @@ function Map_from_2_Arrays1D(array1d_Update_Heads, array1d_Source_Heads) {
   var map_return = new Map();
   var val = '';
 
-  for (let idx = 0; idx < array1d_Update_Heads.length; idx++) {
+  for (var idx = 0; idx < array1d_Update_Heads.length; idx++) {
 
     val = String(array1d_Update_Heads[idx]);
 
@@ -280,9 +280,9 @@ function Array2D_2_Map_Test() {
 
 function Array2D_2_Map(array2d, column_key) {
   // из массива 2мерного вернуть словарь - массив ассоциативный: значение столбца и номер строки
-  let map_return = new Map();
-  let val = '';
-  for (let row = 0; row < array2d.length; row++) {
+  var map_return = new Map();
+  var val = '';
+  for (var row = 0; row < array2d.length; row++) {
     val = String(array2d[row][column_key]);
     if (val.length > 0) {
       // если ключ повторяется, то обновится значение
@@ -315,11 +315,11 @@ function Array1D_2_HeadNumbers_LookUp(array1d_Old, array1d_New) {
 
   // из двух 1мерных массивов создать массив 2мерный с соответствия номеров столбцов
 
-  let value;
-  let row_new;
-  let array2D = [];
+  var value;
+  var row_new;
+  var array2D = [];
 
-  for (let row_old = 0; row_old < array1d_Old.length; row_old++) {
+  for (var row_old = 0; row_old < array1d_Old.length; row_old++) {
 
     value = array1d_Old[row_old];
 
@@ -352,7 +352,7 @@ function Array2D_Column_2_String(array2d, column, separator) {
   var string_col = '';
   var string_new = '';
 
-  for (let row = 0; row < array2d.length; row++) {
+  for (var row = 0; row < array2d.length; row++) {
     string_col = array2d[row][column] + separator;
     string_new += string_col;
   }
@@ -406,16 +406,16 @@ function Array2d_ColumnsEquals_RowsDelete(a2d_In) {
   // массив удалить строки массива 2мерного с одинаковыми значениями
 
   // копировать массив 2мерный не просто
-  var a2d = JSON.parse(JSON.stringify(a2d_In));
+  var a2d = JSON.parse(JSON.stringify(a2d_In))
 
   var val = '';
   var equ = true;
 
-  for (let row = a2d.length - 1; row >= 0; row--) {
+  for (var row = a2d.length - 1; row >= 0; row--) {
 
     val = String(a2d[row][0]);
 
-    for (let col = 1; col < a2d[0].length; col++) {
+    for (var col = 1; col < a2d[0].length; col++) {
 
       if (val !== String(a2d[row][col])) {
 
@@ -469,7 +469,7 @@ function symbols_by_template(string_in, string_check) {
   var str_ret = '';
   var str_idx = '';
 
-  for (let i = 0; i < string_in.length; i++) {
+  for (var i = 0; i < string_in.length; i++) {
 
     str_idx = String(string_in[i]);
 
@@ -491,7 +491,7 @@ function symbols_NOT_in_template(string_in, string_chek) {
   var str_ret = '';
   var str_idx = '';
 
-  for (let i = 0; i < string_in.length; i++) {
+  for (var i = 0; i < string_in.length; i++) {
 
     str_idx = String(string_in[i]);
 
@@ -628,8 +628,8 @@ function rangeApostropheAddIfMoreOne(rng, symb) {
   var pos_Frst = -1;
   var pos_Last = -1;
 
-  for (let row = rowStart; row <= row_Stop; row++) {
-    for (let col = colStart; col <= col_Stop; col++) {
+  for (var row = rowStart; row <= row_Stop; row++) {
+    for (var col = colStart; col <= col_Stop; col++) {
 
       val = sheet.getRange(row, col).getValue();
 
@@ -660,7 +660,7 @@ function textFinder_test() {
     .useRegularExpression(true);
 
   var a1_rng = textFinder.findAll();
-  for (let key in a1_rng) {  // OK in V8
+  for (var key in a1_rng) {  // OK in V8
     var key = a1_rng[key];
     var val = key.getValue();
     Logger.log("val = %s", val);
@@ -705,7 +705,7 @@ function arrayXdDigitsSpaceKiller(aXd, tmp) {
 
   var ele = '';
 
-  for (let idx = 0; idx < aXd.length; idx++) {
+  for (var idx = 0; idx < aXd.length; idx++) {
 
     ele = String(aXd[idx]);
 
@@ -734,7 +734,7 @@ function digitWithSpace(str, tmp) {
 
   var smb = '';
 
-  for (let pos = 0; pos < str.length; pos++) {
+  for (var pos = 0; pos < str.length; pos++) {
 
     smb = str[pos];
 
@@ -775,7 +775,7 @@ function array2dColumnSymbolsLeading_Test() {
 
 function array2dColumnSymbolsLeading(array2d, column, symbol) {
   // проходом по массиву, по столбцу, убрать лидирующие символы
-  for (let row = 0; row < array2d.length; row++) {
+  for (var row = 0; row < array2d.length; row++) {
     array2d[row][column] = stringSymbolsLeadingDelete(array2d[row][column], symbol)
   }
 }
@@ -947,7 +947,7 @@ function digitsCommaPointSpace(str) {
 
   var smb = '';
 
-  for (let pos = 0; pos < str.length; pos++) {
+  for (var pos = 0; pos < str.length; pos++) {
 
     smb = str[pos];
 
