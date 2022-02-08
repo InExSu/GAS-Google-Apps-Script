@@ -17,26 +17,24 @@ function arrays2dDiff_Test() {
     let arrCols = Array1D_2_HeadNumbers_LookUp(a11Head, a12Head);
     let arrKeys = Array2D_2_Map(arr2, 1);
 
-    let arr3 = arrays2dDiff(arr1, arr2, arrCols, arrKeys);
+    let arr3 = arrays2dDiff(arr1, arr2, arrCols, arrKeys, 1);
 }
 
-function arrays2dDiff(arr1, arr2, arrKeys, arr1Cols) {
+function arrays2dDiff(arr1, arr2, arrKeys, arr2Cols, colKey) {
     // Вернуть массив 2мерный (по размерам arr2) было/стало по ключевому полю
     // в одинаковых столбцах
 
     // массив 1 - сводная, массив 2 - Битрикс24
-    // Создать словарь из ключевого столбца массива 2
-    // создать копию массива 2
-    // создать массив соответствия номеров полей заголовков
-    // проходом по ключам массива 1 
-    // если ключ есть в словаре
-    // если заголовок есть в массиве 2
+    // проходом по столбцу ключей массива arr1,
+    // если ключ есть в словаре,
+    // подобрать столбцы дя двух массивов из 
     // если значение 1 и значени 2 различаются
     // добавить в массив 3 значение 1 / значение 2 
     // вернуть массив 3
     let arr3,
         col1,
         col2,
+        key_,
         row2,
         val1,
         val2;
@@ -44,22 +42,24 @@ function arrays2dDiff(arr1, arr2, arrKeys, arr1Cols) {
     arr3 = JSON.parse(JSON.stringify(arr2));
 
     for (let row1 = 0; row1 < arr1.length; row1++) {
-        for (let indx = 0; indx <= arr1Cols.length; col1++) {
 
-            col1 = arr1Cols[indx][0];
+        key_ = arr1[row1][colKey];
 
-            val1 = arr1[row1][col1];
+        if (arrKeys.has(key_)) {
 
-            row2 = arrKeys[val1];
+            row2 = arrKeys.get(key_);
 
-            col2 = arr1Cols[indx][1];
+            for (let indx = 0; indx < arr2Cols.length; col1++) {
 
-            if (row2 * col2 > 0) {
+                col1 = arr2Cols[indx][0];
+                col2 = arr2Cols[indx][1];
 
+                val1 = arr1[row1][col1];
                 val2 = arr2[row2][col2];
 
                 if (val1 !== val2) {
-                    arr3[row3][col3] = val1 + '/' + val2;
+
+                    arr3[row2][col2] = val1 + '/' + val2;
                 }
             }
         }
@@ -91,3 +91,43 @@ function array2dRow2Array1(arr2, row) {
 // Array1D_2_HeadNumbers_LookUp();
 arrays2dDiff_Test();
 
+// Копия из LibraryBigInExSu
+function Array2D_2_Map(array2d, column_key) {
+    // из массива 2мерного вернуть словарь - массив ассоциативный: значение столбца и номер строки
+    let map_return = new Map();
+    let val = '';
+    for (var row = 0; row < array2d.length; row++) {
+        val = String(array2d[row][column_key]);
+        if (val.length > 0) {
+            // если ключ повторяется, то обновится значение
+            map_return.set(val, row);
+        }
+    }
+    return map_return;
+}
+
+// Копия из LibraryBigInExSu
+function Array1D_2_HeadNumbers_LookUp(array1d_Old, array1d_New) {
+
+    // из двух 1мерных массивов создать массив 2мерный с соответствия номеров столбцов
+
+    let value;
+    let row_new;
+    let array2D = [];
+
+    for (var row_old = 0; row_old < array1d_Old.length; row_old++) {
+
+        value = array1d_Old[row_old];
+
+        if (String(value).length > 0) {
+
+            row_new = array1d_New.indexOf(value);
+
+            if (row_new > -1) {
+                array2D.push([row_old, row_new]);
+            }
+        }
+    }
+
+    return array2D;
+}
