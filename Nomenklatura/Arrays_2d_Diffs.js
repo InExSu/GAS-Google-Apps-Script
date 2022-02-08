@@ -1,5 +1,5 @@
-import { Array1D_2_HeadNumbers_LookUp } from './LibraryBigInExSu.js';
-import { Array2D_2_Map } from './LibraryBigInExSu.js';
+// import { Array1D_2_HeadNumbers_LookUp } from './LibraryBigInExSu.js';
+// import { Array2D_2_Map } from './LibraryBigInExSu.js';
 
 function arrays2dDiff_Test() {
     // Вернуть массив 2мерный было/стало по ключевому полю

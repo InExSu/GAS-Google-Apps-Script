@@ -278,7 +278,7 @@ function Array2D_2_Map_Test() {
 
 }
 
-export function Array2D_2_Map(array2d, column_key) {
+function Array2D_2_Map(array2d, column_key) {
   // из массива 2мерного вернуть словарь - массив ассоциативный: значение столбца и номер строки
   let map_return = new Map();
   let val = '';
@@ -311,7 +311,7 @@ function Array1D_2_HeadNumbers_LookUp_Test() {
   // Logger.log(a2_Ret);
 }
 
-export function Array1D_2_HeadNumbers_LookUp(array1d_Old, array1d_New) {
+function Array1D_2_HeadNumbers_LookUp(array1d_Old, array1d_New) {
 
   // из двух 1мерных массивов создать массив 2мерный с соответствия номеров столбцов
 
