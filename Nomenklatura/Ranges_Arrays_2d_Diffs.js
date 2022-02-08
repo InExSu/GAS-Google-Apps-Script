@@ -168,8 +168,34 @@ function Arrays2DHeads2Map(arr1, arr2) {
     // в заголовках массивов 2мерных найти
     // одинаковые и вернуть map с номерами столбцов
 
-    // let map1 = new Map
+    let map = new Map();
+    for (let col1 = 0; col1 < arr1.length; col1++) {
+
+
+    }
 }
+
+function Array2dRowFindColumn_Test() {
+    let a2 = [['z', 'q']];
+    // let cl = Array2dRowFindColumn
+
+    =
+}
+function Array2dRowFindColumn(arr2, row, val) {
+    // в строке массива 2мерного найти значение,
+    // вернуть номер столбца
+
+    let colFind = -1;
+
+    for (let col = 0; col < arr2.length; col++) {
+        if (arr2[row][col] == val) {
+            colFind = col;
+            break;
+        }
+    }
+    return colFind;
+}
+
 // Пусть строки отладки будут внизу
 // Array1D_2_HeadNumbers_LookUp();
 arrays2dDiff_Test();
