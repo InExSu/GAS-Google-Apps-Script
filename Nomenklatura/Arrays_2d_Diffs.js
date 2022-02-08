@@ -19,7 +19,7 @@ function arrays2dDiff_Test() {
     let arrCols = Array1D_2_HeadNumbers_LookUp(a11Head, a12Head);
     let arrKeys = Array2D_2_Map(arr2, 1);
 
-    let arr3 = arrays2dDiff(arr1, arr2, arrCols, arrKeys, 1);
+    let arr3 = arrays2dDiff(arr1, arr2, arrKeys, arrCols, 1);
 
 }
 
@@ -52,7 +52,7 @@ function arrays2dDiff(arr1, arr2, arrKeys, arr2Cols, colKey) {
 
             row2 = arrKeys.get(key_);
 
-            for (let indx = 0; indx < arr2Cols.length; col1++) {
+            for (let indx = 0; indx < arr2Cols.length; indx++) {
 
                 col1 = arr2Cols[indx][0];
                 col2 = arr2Cols[indx][1];
