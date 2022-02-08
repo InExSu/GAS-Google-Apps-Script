@@ -6,20 +6,24 @@ function arrays2dDiff_Test() {
     // в одинаковых столбцах
 
     let arr1 = [
-        ['ст1', 'ст2'],
-        ['va1', 'va2']];
+        ['стол1', 'стол2'],
+        ['ключ1', 'знач1']];
     let arr2 = [
-        ['ст1', 'ст2'],
-        ['va1', 'va2']];
+        ['стол1', 'стол2'],
+        ['ключ1', 'знач2']];
 
     // массив соответствия номеров заголовков столбцов
-    let a11Head = array2dRow2Array1(arr1, 1)
-    let a12Head = array2dRow2Array1(arr2, 1)
+    // let a11Head = array2dRow2Array1(arr1, 0)
+    // let a12Head = array2dRow2Array1(arr2, 0)
+    // let arrCols = Array1D_2_HeadNumbers_LookUp(a11Head, a12Head);
 
-    let arrCols = Array1D_2_HeadNumbers_LookUp(a11Head, a12Head);
+    let arr2Cols = [
+        [1, 2]
+    ];
+
     let arrKeys = Array2D_2_Map(arr2, 1);
 
-    let arr3 = arrays2dDiff(arr1, arr2, arrKeys, arrCols, 1);
+    let arr3 = arrays2dDiff(arr1, arr2, arrKeys, arr2Cols, 1);
 
 }
 
