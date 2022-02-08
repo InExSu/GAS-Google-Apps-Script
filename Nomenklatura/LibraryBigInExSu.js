@@ -3,10 +3,6 @@
 const DIGITS_COMMA_POINT = '0123456789,.';
 const DIGITS_COMMA_POINT_SPACE = '0123456789,. ';
 
-const A = {
-  b: { a },
-};
-
 function Array2D_Update_by_Map_Test() {
   let a2d_New = [
     ['CodeSour', 'ValueSour'],

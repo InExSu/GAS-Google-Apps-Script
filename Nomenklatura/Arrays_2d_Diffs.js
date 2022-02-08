@@ -1,16 +1,22 @@
 // import { Array1D_2_HeadNumbers_LookUp } from './LibraryBigInExSu.js';
 // import { Array2D_2_Map } from './LibraryBigInExSu.js';
 
+function rangeDiffWasNow(range1, range2) {
+    // получить два диапазона сравнить,
+    // вернуть массив сравнения
+    
+}
+
 function arrays2dDiff_Test() {
     // Вернуть массив 2мерный было/стало по ключевому полю
     // в одинаковых столбцах
 
     let arr1 = [
-        ['стол1', 'стол2'],
-        ['ключ1', 'знач1']];
+        ['стол1', 'стол2', 'стол3'],
+        ['ключ1', 'знач1', 'знач13']];
     let arr2 = [
-        ['стол1', 'стол2'],
-        ['ключ1', 'знач2']];
+        ['стол1', 'стол2', 'стол3'],
+        ['ключ1', 'знач2', 'знач23']];
 
     // массив соответствия номеров заголовков столбцов
     // let a11Head = array2dRow2Array1(arr1, 0)
@@ -18,17 +24,23 @@ function arrays2dDiff_Test() {
     // let arrCols = Array1D_2_HeadNumbers_LookUp(a11Head, a12Head);
 
     let arr2Cols = [
-        [1, 1]
+        [1, 1],
+        [2, 2]
     ];
 
     let arrKeys = Array2D_2_Map(arr2, 0);
 
     let arr3 = arrays2dDiff(arr1, 1, arr2, arrKeys, arr2Cols, 0);
     // визуальная проверка
-    let chck = arr3[1][1];
-    if (chck !== arr1[1][1] + "/" + arr2[1][1]) {
+    let chck1 = arr3[1][1];
+    if (chck1 !== arr1[1][1] + "/" + arr2[1][1]) {
         debugger
     }
+    let chck2 = arr3[1][2];
+    if (chck2 !== arr1[1][2] + "/" + arr2[1][2]) {
+        debugger
+    }
+
 }
 
 function arrays2dDiff(arr1, row1Start, arr2, arrKeys, arr2Cols, colKey) {
