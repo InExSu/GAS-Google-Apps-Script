@@ -18,7 +18,7 @@ function arrays2dDiff_Test() {
     // let arrCols = Array1D_2_HeadNumbers_LookUp(a11Head, a12Head);
 
     let arr2Cols = [
-        [0, 1]
+        [1, 1]
     ];
 
     let arrKeys = Array2D_2_Map(arr2, 0);
@@ -60,7 +60,7 @@ function arrays2dDiff(arr1, row1Start, arr2, arrKeys, arr2Cols, colKey) {
 
             for (let indx = 0; indx < arr2Cols.length; indx++) {
 
-                if (indx !== colKey) {
+                if (arr2Cols[indx][0] !== colKey) {
 
                     col1 = arr2Cols[indx][0];
                     col2 = arr2Cols[indx][1];
