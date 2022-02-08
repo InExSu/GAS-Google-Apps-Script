@@ -26,7 +26,9 @@ function arrays2dDiff_Test() {
     let arr3 = arrays2dDiff(arr1, 1, arr2, arrKeys, arr2Cols, 0);
     // визуальная проверка
     let chck = arr3[1][1];
-
+    if (chck !== arr1[1][1] + "/" + arr2[1][1]) {
+        debugger
+    }
 }
 
 function arrays2dDiff(arr1, row1Start, arr2, arrKeys, arr2Cols, colKey) {
@@ -40,6 +42,7 @@ function arrays2dDiff(arr1, row1Start, arr2, arrKeys, arr2Cols, colKey) {
     // если значение 1 и значени 2 различаются
     // добавить в массив 3 значение 1 / значение 2 
     // вернуть массив 3
+
     let arr3,
         col1,
         col2,
