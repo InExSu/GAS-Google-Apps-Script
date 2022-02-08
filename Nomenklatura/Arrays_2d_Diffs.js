@@ -5,10 +5,12 @@ function arrays2dDiff_Test() {
     // Вернуть массив 2мерный было/стало по ключевому полю
     // в одинаковых столбцах
 
-    let arr1, arr2, row1Head, row2Head;
-
-    arr1 = [['ст1', 'ст2'], ['val11', 'val12']];
-    arr2 = [['ст1', 'ст2'], ['val11', 'val22']];
+    let arr1 = [
+        ['ст1', 'ст2'],
+        ['va1', 'va2']];
+    let arr2 = [
+        ['ст1', 'ст2'],
+        ['va1', 'va2']];
 
     // массив соответствия номеров заголовков столбцов
     let a11Head = array2dRow2Array1(arr1, 1)
@@ -18,6 +20,7 @@ function arrays2dDiff_Test() {
     let arrKeys = Array2D_2_Map(arr2, 1);
 
     let arr3 = arrays2dDiff(arr1, arr2, arrCols, arrKeys, 1);
+
 }
 
 function arrays2dDiff(arr1, arr2, arrKeys, arr2Cols, colKey) {
@@ -88,9 +91,6 @@ function array2dRow2Array1(arr2, row) {
     return a1;
 }
 
-// Array1D_2_HeadNumbers_LookUp();
-arrays2dDiff_Test();
-
 // Копия из LibraryBigInExSu
 function Array2D_2_Map(array2d, column_key) {
     // из массива 2мерного вернуть словарь - массив ассоциативный: значение столбца и номер строки
@@ -131,3 +131,7 @@ function Array1D_2_HeadNumbers_LookUp(array1d_Old, array1d_New) {
 
     return array2D;
 }
+
+// Пусть строки отладки будут внизу
+// Array1D_2_HeadNumbers_LookUp();
+arrays2dDiff_Test();
