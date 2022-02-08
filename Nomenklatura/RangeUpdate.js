@@ -261,8 +261,8 @@ function range_2_ArrayValuesFormulas(range) {
 
   // из диапазона вернуть массив значений и формул
 
-  var a2d_formul = range.getFormulas();
-  var a2d_values = range.getValues();
+  let a2d_formul = range.getFormulas();
+  let a2d_values = range.getValues();
   a2d_Values_add_Formulas(a2d_values, a2d_formul);
 
   return a2d_values;

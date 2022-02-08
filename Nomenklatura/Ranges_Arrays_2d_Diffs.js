@@ -1,10 +1,18 @@
 // import { Array1D_2_HeadNumbers_LookUp } from './LibraryBigInExSu.js';
 // import { Array2D_2_Map } from './LibraryBigInExSu.js';
 
-function rangeDiffWasNow(range1, range2) {
+function rangeDiffWasNow2Array2D(range1, range2, row1Start, colKeys1, colKeys2) {
     // получить два диапазона сравнить,
-    // вернуть массив сравнения
-    
+    // вернуть массив сравнения было/стало
+
+    let arr1 = range1.getValues();
+    let arr2 = range2.getValues();
+
+    let arrKeys = Array2D_2_Map(arr2, colKeys2);
+
+    let arr3 = arrays2dDiff(arr1, arr2, row1Start, arrKeys, arr2Cols, colKeys1);
+
+    return arr3
 }
 
 function arrays2dDiff_Test() {
@@ -43,7 +51,7 @@ function arrays2dDiff_Test() {
 
 }
 
-function arrays2dDiff(arr1, row1Start, arr2, arrKeys, arr2Cols, colKey) {
+function arrays2dDiff(arr1, arr2, row1Start, arrKeys, arr2Cols, colKey) {
     // Вернуть массив 2мерный (по размерам arr2) было/стало по ключевому полю
     // в одинаковых столбцах
 
@@ -156,6 +164,12 @@ function Array1D_2_HeadNumbers_LookUp(array1d_Old, array1d_New) {
     return array2D;
 }
 
+function Arrays2DHeads2Map(arr1, arr2) {
+    // в заголовках массивов 2мерных найти
+    // одинаковые и вернуть map с номерами столбцов
+
+    // let map1 = new Map
+}
 // Пусть строки отладки будут внизу
 // Array1D_2_HeadNumbers_LookUp();
 arrays2dDiff_Test();
