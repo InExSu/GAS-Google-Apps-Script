@@ -18,16 +18,18 @@ function arrays2dDiff_Test() {
     // let arrCols = Array1D_2_HeadNumbers_LookUp(a11Head, a12Head);
 
     let arr2Cols = [
-        [1, 2]
+        [0, 1]
     ];
 
-    let arrKeys = Array2D_2_Map(arr2, 1);
+    let arrKeys = Array2D_2_Map(arr2, 0);
 
-    let arr3 = arrays2dDiff(arr1, arr2, arrKeys, arr2Cols, 1);
+    let arr3 = arrays2dDiff(arr1, 1, arr2, arrKeys, arr2Cols, 0);
+    // визуальная проверка
+    let chck = arr3[1][1];
 
 }
 
-function arrays2dDiff(arr1, arr2, arrKeys, arr2Cols, colKey) {
+function arrays2dDiff(arr1, row1Start, arr2, arrKeys, arr2Cols, colKey) {
     // Вернуть массив 2мерный (по размерам arr2) было/стало по ключевому полю
     // в одинаковых столбцах
 
@@ -48,7 +50,7 @@ function arrays2dDiff(arr1, arr2, arrKeys, arr2Cols, colKey) {
 
     arr3 = JSON.parse(JSON.stringify(arr2));
 
-    for (let row1 = 0; row1 < arr1.length; row1++) {
+    for (let row1 = row1Start; row1 < arr1.length; row1++) {
 
         key_ = arr1[row1][colKey];
 
@@ -58,15 +60,18 @@ function arrays2dDiff(arr1, arr2, arrKeys, arr2Cols, colKey) {
 
             for (let indx = 0; indx < arr2Cols.length; indx++) {
 
-                col1 = arr2Cols[indx][0];
-                col2 = arr2Cols[indx][1];
+                if (indx !== colKey) {
 
-                val1 = arr1[row1][col1];
-                val2 = arr2[row2][col2];
+                    col1 = arr2Cols[indx][0];
+                    col2 = arr2Cols[indx][1];
 
-                if (val1 !== val2) {
+                    val1 = arr1[row1][col1];
+                    val2 = arr2[row2][col2];
 
-                    arr3[row2][col2] = val1 + '/' + val2;
+                    if (val1 !== val2) {
+
+                        arr3[row2][col2] = val1 + '/' + val2;
+                    }
                 }
             }
         }
