@@ -164,38 +164,75 @@ function Array1D_2_HeadNumbers_LookUp(array1d_Old, array1d_New) {
     return array2D;
 }
 
-function Arrays2DHeads2Map(arr1, arr2) {
-    // в заголовках массивов 2мерных найти
-    // одинаковые и вернуть map с номерами столбцов
+function Arrays2DHeads2MapArrays1d_Test() {
+    let
+        arr21, arr22,
+        row1, row2;
 
-    let map = new Map();
-    for (let col1 = 0; col1 < arr1.length; col1++) {
+    row1 = 0, row2 = 0;
 
+    arr21 = [["z", 'q']];
+    arr22 = [["z", 'w', 'q']];
 
+    let map = Arrays2DHeads2MapArrays1d(arr21, arr22, row1, row2);
+    if (map.size !== 2) {
+        debugger
     }
 }
 
-function Array2dRowFindColumn_Test() {
-    let a2 = [['z', 'q']];
-    // let cl = Array2dRowFindColumn
+function Arrays2DHeads2MapArrays1d(arr21, arr22, row1, row2) {
+    // в заголовках массивов 2мерных найти
+    // одинаковые и вернуть 
+    // map с массивами 1мерными с номерами столбцов
 
-    =
-}
-function Array2dRowFindColumn(arr2, row, val) {
-    // в строке массива 2мерного найти значение,
-    // вернуть номер столбца
+    let map2 = Array2dRowValues2MapColumnsNumbers(arr22, row2);
+    let mapR = new Map();
 
-    let colFind = -1;
+    for (let col1 = 0; col1 < arr21.length; col1++) {
 
-    for (let col = 0; col < arr2.length; col++) {
-        if (arr2[row][col] == val) {
-            colFind = col;
-            break;
+        let arr11 = arr21[row1, col1];
+
+        for (let indx = 0; indx < arr11.length; indx++) {
+
+            let key = arr11[indx];
+
+            if (map2.has(key)) {
+
+                let arr1Keys = [col1, map2.get(key)];
+                mapR.set(key, arr1Keys);
+            }
         }
     }
-    return colFind;
+    return mapR;
 }
 
+function Array2dRowValues2MapColumnsNumbers_Test() {
+    let a2 = [["z", 'q']];
+    let map = Array2dRowValues2MapColumnsNumbers(a2, 0);
+    let val = map.get("z");
+    if (val !== 0) {
+        debugger
+    }
+}
+function Array2dRowValues2MapColumnsNumbers(arr2, row) {
+    // из строки массива 2мерного вернуть
+    // map с названиями и номерами столбцов
+
+    let map = new Map();
+
+    let ar1 = arr2[row];
+    for (let idx = 0; idx < ar1.length; idx++) {
+        let key = ar1[idx]
+        map.set(key, idx);
+    }
+    return map;
+}
+
+
+
 // Пусть строки отладки будут внизу
+
 // Array1D_2_HeadNumbers_LookUp();
-arrays2dDiff_Test();
+// arrays2dDiff_Test();
+// Array2dRowValues2MapColumnsNumbers_Test();
+Arrays2DHeads2MapArrays1d_Test();
