@@ -114,12 +114,12 @@ function Range_Update_by_Heads_RUN() {
 
             // восстановить формулу в Артикул
             // formula_n = '=ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы СТ\'!$B:$C;2;0));\n   ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы ТМ\'!$B:$C;2;0));\n     ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы АРТИ\'!$B:$C;2;0));\n        ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы ЭХМЗ\'!$B:$C;2;0));\n   "Не найдено";\n   ВПР(A2;\'Артикулы ЭХМЗ\'!$B:$C;2;0));\n   ВПР(A2;\'Артикулы АРТИ\'!$B:$C;2;0));\n   ВПР(A2;\'Артикулы ТМ\'!$B:$C;2;0));\n   ВПР(A2;\'Артикулы СТ\'!$B:$C;2;0))'
-            formula_n = '=IF(ISNA(VLOOKUP(A2;\'Артикулы СТ\'!$B:$C;2;0));\n   IF(ISNA(VLOOKUP(A2;\'Артикулы ТМ\'!$B:$C;2;0));\n     IF(ISNA(VLOOKUP(A2;\'Артикулы АРТИ\'!$B:$C;2;0));\n        IF(ISNA(VLOOKUP(A2;\'Артикулы ЭХМЗ\'!$B:$C;2;0));\n   "Не найдено";\n   VLOOKUP(A2;\'Артикулы ЭХМЗ\'!$B:$C;2;0));\n   VLOOKUP(A2;\'Артикулы АРТИ\'!$B:$C;2;0));\n   VLOOKUP(A2;\'Артикулы ТМ\'!$B:$C;2;0));\n   VLOOKUP(A2;\'Артикулы СТ\'!$B:$C;2;0))'
-            var origin = sheet_Old.getRange("B2");
-            var target = sheet_Old.getRange("B3:B");
-            origin.setFormula(formula_n);
-            // формулу протянуть до последней
-            origin.copyTo(target);
+            // formula_n = '=IF(ISNA(VLOOKUP(A2;\'Артикулы СТ\'!$B:$C;2;0));\n   IF(ISNA(VLOOKUP(A2;\'Артикулы ТМ\'!$B:$C;2;0));\n     IF(ISNA(VLOOKUP(A2;\'Артикулы АРТИ\'!$B:$C;2;0));\n        IF(ISNA(VLOOKUP(A2;\'Артикулы ЭХМЗ\'!$B:$C;2;0));\n   "Не найдено";\n   VLOOKUP(A2;\'Артикулы ЭХМЗ\'!$B:$C;2;0));\n   VLOOKUP(A2;\'Артикулы АРТИ\'!$B:$C;2;0));\n   VLOOKUP(A2;\'Артикулы ТМ\'!$B:$C;2;0));\n   VLOOKUP(A2;\'Артикулы СТ\'!$B:$C;2;0))'
+            // var origin = sheet_Old.getRange("B2");
+            // var target = sheet_Old.getRange("B3:B");
+            // origin.setFormula(formula_n);
+            // // формулу протянуть до последней
+            // origin.copyTo(target);
 
             choice = Browser.msgBox('Показать лист Log', Browser.Buttons.YES_NO);
             if (choice == 'yes') {
@@ -133,29 +133,30 @@ function Range_Update_by_Heads_RUN() {
   }
 }
 
+function rangeFormulaFill(sheet, cellPut, rangeFill, formula) {
+  // в дипазон вставить формулу протягиванием
+  // let origin = sheet.getRange("B2");
+  // let target = sheet.getRange("B3:B");
+  let origin = sheet.getRange(cellPut);
+  let target = sheet.getRange(rangeFill);
+  origin.setFormula(formula);
+  // формулу протянуть до последней
+  origin.copyTo(target);
+}
 
 function Range_Update_by_Heads(rng_Old, column_Key_Old, rng_New, column_Key_New, a2d_columns, log_make) {
 
   // Обновить диапазон по совпадению в ключевых столбцах с учётом наименований столбцов
   // диапазоны в массивы
 
-  // 2021-09-10
-  // var a2d_Old = rng_Old.getValues();
-  // var a2d_New = rng_New.getValues();
-  // 2021-12-13
-  // var a2d_Old = range_2_ArrayValuesFormulas(rng_Old);
-  var a2d_Old = rng_Old.getValues();
-  var a2d_New = range_2_ArrayValuesFormulas(rng_New);
+  let a2d_Old = range_2_ArrayValuesFormulas(rng_Old) //2022-02-17 rng_Old.getValues();
+  let a2d_New = range_2_ArrayValuesFormulas(rng_New);
 
-  // в листе "сводная таблица" в столбце Код нулей лидирующих нет,
-  // поэтому удаляю нули из нового. Нет не буду удалять, сделаю нули в ячейках.
-  //  array2dColumnSymbolsLeading(a2d_New, column_Key_New, '0');
-
-  var map_Sea = Array2D_2_Map(a2d_New, column_Key_New);
+  let map_Sea = Array2D_2_Map(a2d_New, column_Key_New);
 
   // основное действие
 
-  var a2d_Ret = Array2D_Update_by_Map(a2d_New, a2d_Old,
+  let a2d_Ret = Array2D_Update_by_Map(a2d_New, a2d_Old,
     column_Key_Old, map_Sea, a2d_columns, 'Log');
 
   // массив положить на лист
