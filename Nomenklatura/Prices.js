@@ -17,9 +17,9 @@ function priceArticoolPivot_RUN() {
     Browser.msgBox('Диапазон артикулов не похож на ожидаемый');
   }
 }
-priceColumnUpdate_Test();
+priceColumnUpdate_Test('vsCode');
 
-function priceColumnUpdate_Test() {
+function priceColumnUpdate_Test(vsCode) {
 
   let a2_Arti_Range = [
     ['1', ''],
@@ -36,11 +36,11 @@ function priceColumnUpdate_Test() {
   priceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum);
 
   if (a2_Price_Colum[4][0] !== 11) {
-    console.log('a2_Price_Colum[4][0] !== 11');
+    consLogIDE('a2_Price_Colum[4][0] !== 11', vsCode);
   }
 }
 
-function priceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum) {
+function priceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum, vsCode) {
   // Словарь артикулов - артикул: номер строки
 
   // Проходом по массиву артикулов
@@ -50,7 +50,7 @@ function priceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Col
   // 				Вставить в массив цен цену по номеру строки
 
   for (let row = 0; row < a2_Arti_Range.length; row++) {
-    for (let col = 0; col < a2_Arti_Range[0].length; row++) {
+    for (let col = 0; col < a2_Arti_Range[0].length; col++) {
 
       let artic = a2_Arti_Range[row][col];
 
@@ -75,6 +75,14 @@ function priceRangeArticoolsCheck(sheet) {
 
 }
 
+function consLogIDE(msg, vsCode) {
+  // в зависимости от IDE делавть выввод
+  if (vsCode) {
+    console.log(msg);
+  } else {
+    Browser.log(msg);
+  }
+}
 
 function priceArticoolPivot() {
   // Скрипт получит на вход:

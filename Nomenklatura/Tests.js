@@ -1,12 +1,10 @@
-function curry(fn) {
-    const arity = fn.length;
-
-    return function $curry(...args) {
-        if (args.length < arity) {
-            return $curry.bind(null, ...args);
-        }
-        return fn.call(null, ...args);
+function consLogIDE(msg, vsCode) {
+    // в зависимости от IDE делавть выввод
+    if (vsCode) {
+        console.log(msg);
+    } else {
+        Browser.log(msg);
     }
 }
 
-const match = curry((what, s) => s.match(what));
+consLogIDE();
