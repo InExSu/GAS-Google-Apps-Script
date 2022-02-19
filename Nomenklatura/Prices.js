@@ -17,6 +17,7 @@ function priceArticoolPivot_RUN() {
     Browser.msgBox('Диапазон артикулов не похож на ожидаемый');
   }
 }
+priceColumnUpdate_Test();
 
 function priceColumnUpdate_Test() {
 
@@ -37,7 +38,6 @@ function priceColumnUpdate_Test() {
   if (a2_Price_Colum[4][0] !== 11) {
     console.log('a2_Price_Colum[4][0] !== 11');
   }
-
 }
 
 function priceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum) {
