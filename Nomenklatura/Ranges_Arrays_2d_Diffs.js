@@ -1,5 +1,5 @@
 // import { Array1D_2_HeadNumbers_LookUp } from './LibraryBigInExSu.js';
-// import { Array2D_2_Map } from './LibraryBigInExSu.js';
+// import { Array2D_Column_2_Map } from './LibraryBigInExSu.js';
 
 function rangeDiffWasNow2Array2D(range1, range2, row1Start, colKeys1, colKeys2) {
     // получить два диапазона сравнить,
@@ -8,7 +8,7 @@ function rangeDiffWasNow2Array2D(range1, range2, row1Start, colKeys1, colKeys2) 
     let arr1 = range1.getValues();
     let arr2 = range2.getValues();
 
-    let arrKeys = Array2D_2_Map(arr2, colKeys2);
+    let arrKeys = Array2D_Column_2_Map(arr2, colKeys2);
 
     let arr3 = arrays2dDiff(arr1, arr2, row1Start, arrKeys, arr2Cols, colKeys1);
 
@@ -36,7 +36,7 @@ function arrays2dDiff_Test() {
         [2, 2]
     ];
 
-    let arrKeys = Array2D_2_Map(arr2, 0);
+    let arrKeys = Array2D_Column_2_Map(arr2, 0);
 
     let arr3 = arrays2dDiff(arr1, 1, arr2, arrKeys, arr2Cols, 0);
     // визуальная проверка
@@ -124,7 +124,7 @@ function array2dRow2Array1(arr2, row) {
 }
 
 // Копия из LibraryBigInExSu
-function Array2D_2_Map(array2d, column_key) {
+function Array2D_Column_2_Map(array2d, column_key) {
     // из массива 2мерного вернуть словарь - массив ассоциативный: значение столбца и номер строки
     let map_return = new Map();
     let val = '';

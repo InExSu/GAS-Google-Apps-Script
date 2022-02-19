@@ -6,6 +6,78 @@
 // По этим версиям, скрипт обновления цен в листе "сводная таблица"
 // создаст справа отчёт работы в третью таблицу.
 
+function testsRUN() {
+  // запускай тесты
+  // A2PriceColumnUpdate_Test();
+  // rangePriceColumnUpdate_Test();
+}
+
+function rangePriceColumnUpade() {
+
+  const spread = SpreadsheetApp.getActive();
+
+  const sheet_Sour = spread.getSheetByName('Прайс без НДС');
+  const sheet_Dest = spread.getSheetByName('сводная таблица (копия);');
+
+  if (headersOk(sheet_Sour, sheet_Dest)) {
+
+    let warning = 'Ожидаемые заголовки НЕ совпали. \n Выход!'
+
+    if (sheet_Dest.getName().indexOf('копия') === -1) {
+      Browser.msgBox(warning);
+    }
+    Logger.log(warning);
+
+  } else {
+
+    const a2_Artics = sheet_Sour.getRange('L:Q').getValues();
+    const a2_Prices = sheet_Sour.getRange('C:H').getValues();
+
+    const a2_Column_Artics = sheet_Dest.getRange('B:B').getValues();
+    const map_Artics = Array2D_2_Map(a2_Column_Artics);
+
+    const range_Column_Prices = sheet_Dest.getRange('J:J');
+    const a2_Column_Prices = range_Column_Prices.getValues();
+
+    A2PriceColumnUpdate(a2_Artics, a2_Prices, map_Artics, a2_Column_Prices);
+
+    //range_Column_Prices.setValues(a2_Column_Prices);
+  }
+}
+
+function headersOk(sheet_Sour, sheet_Dest) {
+  // проверка значений ячеек
+
+  return cell_Value(sheet_Dest.getRange('B1'), 'Артикул') &&
+    cell_Value(sheet_Dest.getRange('J1'), 'Цена, руб (Без НДС)') &&
+    cell_Value(sheet_Sour.getRange('C7'), 'ШМП-1')
+
+}
+
+function cell_Value_Test() {
+
+  const sheet = SpreadsheetApp.getActive().getSheetByName('Прайс без НДС');
+  const cell_ = sheet.getRange('C7')
+
+  let value = 'ШМП-1';
+  let resul = cell_Value(cell_, value);
+  Logger.log(resul);
+
+  value = '';
+  resul = cell_Value(cell_, value);
+  Logger.log(resul);
+}
+
+function cell_Value(cell, value) {
+  if (cell.getValue() !== value) {
+    const sheet = sheetByRange(cell);
+    Logger.log('На листе ' + sheet.getName() + ' в ячейке ' +
+      cell.getA1Notation() + ' !== ' + value);
+    return false;
+  }
+  return true;
+}
+
 function priceArticoolPivot_RUN() {
   // вызываю по кнопке на листе
   let sheet = SpreadsheetApp.getActive().getActiveSheet();
@@ -17,9 +89,8 @@ function priceArticoolPivot_RUN() {
     Browser.msgBox('Диапазон артикулов не похож на ожидаемый');
   }
 }
-priceColumnUpdate_Test('vsCode');
 
-function priceColumnUpdate_Test(vsCode) {
+function A2PriceColumnUpdate_Test() {
 
   let a2_Arti_Range = [
     ['1', ''],
@@ -31,16 +102,16 @@ function priceColumnUpdate_Test(vsCode) {
   let a2_Arti__Colum = ['5', '4', '3', '2', '1'];
   let a2_Price_Colum = [5, 4, 3, 2, 1];
 
-  let map_Arti = Array2D_2_Map(a2_Arti__Colum, 0);
+  let map_Arti = Array2D_Column_2_Map(a2_Arti__Colum, 0);
 
-  priceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum);
+  A2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum);
 
   if (a2_Price_Colum[4][0] !== 11) {
-    consLogIDE('a2_Price_Colum[4][0] !== 11', vsCode);
+    Browser.msgBox('a2_Price_Colum[4][0] !== 11');
   }
 }
 
-function priceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum, vsCode) {
+function A2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum) {
   // Словарь артикулов - артикул: номер строки
 
   // Проходом по массиву артикулов
@@ -78,9 +149,9 @@ function priceRangeArticoolsCheck(sheet) {
 function consLogIDE(msg, vsCode) {
   // в зависимости от IDE делавть выввод
   if (vsCode) {
-    console.log(msg);
+    //    console.log(msg);
   } else {
-    Browser.log(msg);
+    Browser.msgBox(msg);
   }
 }
 
@@ -208,7 +279,7 @@ function extractBetween(sMain, sLeft, sRigh) {
   return strOut;
 }
 
-function Array2D_2_Map(array2d, column_key) {
+function Array2D_Column_2_Map(array2d, column_key) {
   // из массива 2мерного вернуть словарь - массив ассоциативный: значение столбца и номер строки
   let map_return = new Map();
   let val = '';
@@ -220,4 +291,42 @@ function Array2D_2_Map(array2d, column_key) {
     }
   }
   return map_return;
+}
+
+function Array2D_2_Map(array2d) {
+  // из массива 2мерного вернуть словарь массив ассоциативный
+
+  let map_return = new Map();
+  let val = '';
+
+  for (let row = 0; row < array2d.length; row++) {
+    for (let col = 0; col < array2d[0].length; col++) {
+
+      val = String(array2d[row][col]);
+
+      if (val.length > 0) {
+        // если ключ повторяется, то обновится значение
+        map_return.set(val, row);
+      }
+    }
+  }
+  return map_return;
+}
+
+function sheetByRange(cell) {
+  // вернуть лист по диапазону
+  // как в Excel range.Parent
+
+  return sheetById(cell.getGridId());
+}
+
+
+function sheetById(id) {
+  // вернуть лист по id
+
+  return SpreadsheetApp.getActive().getSheets().filter(
+    function (s) {
+      return s.getSheetId() === id;
+    }
+  )[0];
 }

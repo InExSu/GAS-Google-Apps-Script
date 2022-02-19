@@ -152,7 +152,7 @@ function Range_Update_by_Heads(rng_Old, column_Key_Old, rng_New, column_Key_New,
   let a2d_Old = range_2_ArrayValuesFormulas(rng_Old) //2022-02-17 rng_Old.getValues();
   let a2d_New = range_2_ArrayValuesFormulas(rng_New);
 
-  let map_Sea = Array2D_2_Map(a2d_New, column_Key_New);
+  let map_Sea = Array2D_Column_2_Map(a2d_New, column_Key_New);
 
   // основное действие
 

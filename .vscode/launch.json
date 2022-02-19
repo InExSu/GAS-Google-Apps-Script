@@ -20,7 +20,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\Nomenklatura\\Tests.js"
+            "program": "${workspaceFolder}\\Nomenklatura\\Prices.js"
         }
     ]
 }

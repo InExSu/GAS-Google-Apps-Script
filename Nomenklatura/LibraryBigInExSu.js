@@ -15,7 +15,7 @@ function Array2D_Update_by_Map_Test() {
     ['1', 'Старый 2']
   ];
   let column_code = 0;
-  let map_codes = Array2D_2_Map(a2d_New, 0);
+  let map_codes = Array2D_Column_2_Map(a2d_New, 0);
   let array2d_columns = [[1, 1]];
   // Logger.log('a2d_Update ' + a2d_Old);
 
@@ -247,7 +247,7 @@ function Array2D_2_Map_Test() {
     [0, 1, 2], // строка 0  
     [3, 4, 5] // строка 1  
   ];
-  let map = Array2D_2_Map(a2, 0);
+  let map = Array2D_Column_2_Map(a2, 0);
   if (map.size == 2) {
     // Logger.log('Array2D_2_Map_Test = OK');
   } else {
@@ -258,7 +258,7 @@ function Array2D_2_Map_Test() {
     [0, 1, 2], // строка 0  
     [0, 4, 5] // строка 1  
   ];
-  map = Array2D_2_Map(a2, 0);
+  map = Array2D_Column_2_Map(a2, 0);
   if (map.size == 1) {
     // Logger.log('Array2D_2_Map_Test повтор = OK');
   } else {
@@ -269,7 +269,7 @@ function Array2D_2_Map_Test() {
     ["Z", 1, 2], // строка 0  
     ["z", 4, 5] // строка 1  
   ];
-  map = Array2D_2_Map(a2, 0);
+  map = Array2D_Column_2_Map(a2, 0);
   if (map.size == 2) {
     // Logger.log('Array2D_2_Map_Test регистр = OK');
   } else {
@@ -278,7 +278,7 @@ function Array2D_2_Map_Test() {
 
 }
 
-function Array2D_2_Map(array2d, column_key) {
+function Array2D_Column_2_Map(array2d, column_key) {
   // из массива 2мерного вернуть словарь - массив ассоциативный: значение столбца и номер строки
   let map_return = new Map();
   let val = '';
