@@ -30,7 +30,6 @@ function priceRangeArticoolsCheck(sheet) {
 }
 
 
-
 function priceArticoolPivot() {
   // Скрипт получит на вход:
   // - диапазон прайса с артикулами
@@ -87,9 +86,9 @@ function sheetColumnValueRowLastNumber(range) {
   // возвращает номер последней непустой строки
   // идёт снизу вверх по массиву
 
-  let array1d = range.getValues();
-  for (let i = array1d.length - 1; i >= 0; i--) {
-    if (array1d[i][0] != null && array1d[i][0] != '') {
+  let array2d = range.getValues();
+  for (let i = array2d.length - 1; i >= 0; i--) {
+    if (array2d[i][0] != null && array2d[i][0] != '') {
       return i + 1;
     };
   };
@@ -104,7 +103,7 @@ function price2VendorCode_Test() {
 }
 
 function price2VendorCode(formu) {
-  // здесь разовый этап создания из таблицы с формулами таблицы с артикулами
+  // Разовый этап создания из таблицы с формулами таблицы с артикулами
   // UDF из тексту формулы извлекает код 1С,
   // по коду 1С ищет на листе строку с этим кодом,
   // если в строке есть артикул вернёт его или cell
