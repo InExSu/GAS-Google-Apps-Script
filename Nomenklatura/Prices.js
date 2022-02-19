@@ -1,5 +1,5 @@
 // Переделка прайса
-// из формул с кодом сделать копию с артикулами.
+// из формул с кодом разово сделать копию с артикулами.
 // На листе будут три таблицы:
 // слева    версия для печати - цены вбиваются пользователями.
 // в центре версия с артикулами.
@@ -18,6 +18,52 @@ function priceArticoolPivot_RUN() {
   }
 }
 
+function priceColumnUpdate_Test() {
+
+  let a2_Arti_Range = [
+    ['1', ''],
+    ['3', '4']];
+  let a2_Price_Range = [
+    [11, 22],
+    [33, 44]];
+
+  let a2_Arti__Colum = ['5', '4', '3', '2', '1'];
+  let a2_Price_Colum = [5, 4, 3, 2, 1];
+
+  let map_Arti = Array2D_2_Map(a2_Arti__Colum, 0);
+
+  priceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum);
+
+  if (a2_Price_Colum[4][0] !== 11) {
+    console.log('a2_Price_Colum[4][0] !== 11');
+  }
+
+}
+
+function priceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum) {
+  // Словарь артикулов - артикул: номер строки
+
+  // Проходом по массиву артикулов
+  // 	Если артикул есть в словаре
+  // 		Взять цену из массива цен в координатах артикула
+  // 			Взять номер строки из словаря
+  // 				Вставить в массив цен цену по номеру строки
+
+  for (let row = 0; row < a2_Arti_Range.length; row++) {
+    for (let col = 0; col < a2_Arti_Range[0].length; row++) {
+
+      let artic = a2_Arti_Range[row][col];
+
+      if (map_Arti.has(artic)) {
+
+        let row_Price = map_Arti.get(artic);
+        let price = a2_Price_Range[row][col];
+
+        a2_Price_Colum[row_Price, 0] = price;
+      }
+    }
+  }
+}
 function priceRangeArticoolsCheck(sheet) {
   let value = sheet.getRange("S2").getValues();
   if (value !== 'ШМП-1') { return false };
@@ -32,10 +78,10 @@ function priceRangeArticoolsCheck(sheet) {
 
 function priceArticoolPivot() {
   // Скрипт получит на вход:
-  // - диапазон прайса с артикулами
-  // - диапазон прайса с ценами
-  // - столбец артикулов "сводная таблица"
-  // - столбец цен            "сводная таблица"
+  // - массив прайса с артикулами
+  // - массив прайса с ценами
+  // - массив артикулов "сводная таблица"
+  // - массив цен            "сводная таблица"
 
   // Проходом по массиву диапазона прайса с артикулами,
   // ищет значение ячейки в массиве артикулов "сводная таблица".
@@ -154,3 +200,16 @@ function extractBetween(sMain, sLeft, sRigh) {
   return strOut;
 }
 
+function Array2D_2_Map(array2d, column_key) {
+  // из массива 2мерного вернуть словарь - массив ассоциативный: значение столбца и номер строки
+  let map_return = new Map();
+  let val = '';
+  for (var row = 0; row < array2d.length; row++) {
+    val = String(array2d[row][column_key]);
+    if (val.length > 0) {
+      // если ключ повторяется, то обновится значение
+      map_return.set(val, row);
+    }
+  }
+  return map_return;
+}
