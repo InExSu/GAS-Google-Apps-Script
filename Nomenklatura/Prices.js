@@ -6,20 +6,15 @@
 // По этим версиям, скрипт обновления цен в листе "сводная таблица"
 // создаст справа отчёт работы в третью таблицу.
 
-function testsRUN() {
-  // запускай тесты
-  // A2PriceColumnUpdate_Test();
-  // rangePriceColumnUpdate_Test();
-}
-
 function rangePriceColumnUpade() {
 
   const spread = SpreadsheetApp.getActive();
 
   const sheet_Sour = spread.getSheetByName('Прайс без НДС');
-  const sheet_Dest = spread.getSheetByName('сводная таблица (копия);');
+  const sheet_Dest = spread.getSheetByName('сводная таблица');
+  const sheet_Logg = spread.getSheetByName('Log');
 
-  if (headersOk(sheet_Sour, sheet_Dest)) {
+  if (headersOk(sheet_Sour, sheet_Dest) === false) {
 
     let warning = 'Ожидаемые заголовки НЕ совпали. \n Выход!'
 
@@ -39,10 +34,75 @@ function rangePriceColumnUpade() {
     const range_Column_Prices = sheet_Dest.getRange('J:J');
     const a2_Column_Prices = range_Column_Prices.getValues();
 
+    // копировать массив 2мерный не просто
+    const a2_Column_Prices_Old = JSON.parse(JSON.stringify(a2_Column_Prices))
+
     A2PriceColumnUpdate(a2_Artics, a2_Prices, map_Artics, a2_Column_Prices);
 
-    //range_Column_Prices.setValues(a2_Column_Prices);
+    range_Column_Prices.setValues(a2_Column_Prices);
+
+    rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices);
   }
+}
+
+function A2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum) {
+  // Словарь артикулов - артикул: номер строки
+
+  // Проходом по массиву артикулов
+  // 	Если артикул есть в словаре
+  // 		Взять цену из массива цен в координатах артикула
+  // 			Взять номер строки из словаря
+  // 				Вставить в массив цен цену по номеру строки
+
+  for (let row = 0; row < a2_Arti_Range.length; row++) {
+    for (let col = 0; col < a2_Arti_Range[0].length; col++) {
+
+      let artic = a2_Arti_Range[row][col];
+
+      if (map_Arti.has(artic)) {
+
+        let row_Price = map_Arti.get(artic);
+        let price = a2_Price_Range[row][col];
+
+        a2_Price_Colum[row_Price][0] = price;
+      }
+    }
+  }
+}
+
+function rangePriceColumnUpade_Log_Test() {
+
+  const spread = SpreadsheetApp.getActive();
+  const sheet_Logg = spread.getSheetByName('Log');
+
+  const a2_Column_Artics = [['a1'], ['a2']];
+  const a2_Column_Prices_Old = [[1], [2]];
+  const a2_Column_Prices_New = [[11], [22]];
+
+  rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices_New)
+}
+
+function rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices) {
+
+  sheet_Logg.clear();
+
+  let cell = sheet_Logg.getRange('A1')
+  let a2 = [['Лог обновления цен сводная таблица из Прайс без НДС', '', Utilities.formatDate(new Date(), "GMT+3", "yyyy-MM-dd HH:mm:ss' мск'")]];
+  array2d2Range(cell, a2)
+
+  cell = sheet_Logg.getRange('A3')
+  a2 = [['Было', 'Стало']]
+  array2d2Range(cell, a2)
+
+  a2_Column_Artics
+  cell = sheet_Logg.getRange('A4');
+  array2d2Range(cell, a2_Column_Artics)
+
+  cell = sheet_Logg.getRange('B4');
+  array2d2Range(cell, a2_Column_Prices_Old)
+
+  cell = sheet_Logg.getRange('C4');
+  array2d2Range(cell, a2_Column_Prices);
 }
 
 function headersOk(sheet_Sour, sheet_Dest) {
@@ -50,7 +110,8 @@ function headersOk(sheet_Sour, sheet_Dest) {
 
   return cell_Value(sheet_Dest.getRange('B1'), 'Артикул') &&
     cell_Value(sheet_Dest.getRange('J1'), 'Цена, руб (Без НДС)') &&
-    cell_Value(sheet_Sour.getRange('C7'), 'ШМП-1')
+    cell_Value(sheet_Sour.getRange('C7'), 'ШМП-1') &&
+    cell_Value(sheet_Sour.getRange('L7'), 'ШМП-1')
 
 }
 
@@ -78,17 +139,6 @@ function cell_Value(cell, value) {
   return true;
 }
 
-function priceArticoolPivot_RUN() {
-  // вызываю по кнопке на листе
-  let sheet = SpreadsheetApp.getActive().getActiveSheet();
-
-  // Убеждаюсь, что диапазон артикулов на месте
-  if (priceRangeArticoolsCheck(sheet)) {
-
-  } else {
-    Browser.msgBox('Диапазон артикулов не похож на ожидаемый');
-  }
-}
 
 function A2PriceColumnUpdate_Test() {
 
@@ -107,84 +157,11 @@ function A2PriceColumnUpdate_Test() {
   A2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum);
 
   if (a2_Price_Colum[4][0] !== 11) {
-    Browser.msgBox('a2_Price_Colum[4][0] !== 11');
+    Logger.log('a2_Price_Colum[4][0] !== 11');
   }
 }
 
-function A2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum) {
-  // Словарь артикулов - артикул: номер строки
 
-  // Проходом по массиву артикулов
-  // 	Если артикул есть в словаре
-  // 		Взять цену из массива цен в координатах артикула
-  // 			Взять номер строки из словаря
-  // 				Вставить в массив цен цену по номеру строки
-
-  for (let row = 0; row < a2_Arti_Range.length; row++) {
-    for (let col = 0; col < a2_Arti_Range[0].length; col++) {
-
-      let artic = a2_Arti_Range[row][col];
-
-      if (map_Arti.has(artic)) {
-
-        let row_Price = map_Arti.get(artic);
-        let price = a2_Price_Range[row][col];
-
-        a2_Price_Colum[row_Price, 0] = price;
-      }
-    }
-  }
-}
-function priceRangeArticoolsCheck(sheet) {
-  let value = sheet.getRange("S2").getValues();
-  if (value !== 'ШМП-1') { return false };
-
-  value = sheet.getRange("S3").getValues();
-  if (value !== 'МАГ-4') { return false };
-
-  return true
-
-}
-
-function consLogIDE(msg, vsCode) {
-  // в зависимости от IDE делавть выввод
-  if (vsCode) {
-    //    console.log(msg);
-  } else {
-    Browser.msgBox(msg);
-  }
-}
-
-function priceArticoolPivot() {
-  // Скрипт получит на вход:
-  // - массив прайса с артикулами
-  // - массив прайса с ценами
-  // - массив артикулов "сводная таблица"
-  // - массив цен            "сводная таблица"
-
-  // Проходом по массиву диапазона прайса с артикулами,
-  // ищет значение ячейки в массиве артикулов "сводная таблица".
-  // Если находит, то берёт значение из массива цен и
-  // вставляет в массив цен "сводная таблица"
-  // По окончании вставляет массив цен "сводная таблица" на лист.
-
-
-}
-
-
-function rangeCtrlShiftDown_Test() {
-  let cell = SpreadsheetApp.getActive().getRange('S1:Y1');
-  rangeCtrlShiftDown(cell).activate();
-}
-function rangeCtrlShiftDown(range) {
-  // вернуть прямоугольный диапазон от range по последнюю строку со значеними
-  let sheet = sheetByRange(range);
-  let row_First = 1;
-  let row_Last_ = 1;
-  // ToDo: продолжить
-  // let row_Last_ = sheetColumnValueRowLastNumber()
-  // return sheet.getRange(range);
-}
 
 
 function sheetByRange(cell) {
@@ -205,19 +182,6 @@ function sheetById(id) {
   )[0];
 }
 
-
-function sheetColumnValueRowLastNumber(range) {
-  // принимает  диапазон,
-  // возвращает номер последней непустой строки
-  // идёт снизу вверх по массиву
-
-  let array2d = range.getValues();
-  for (let i = array2d.length - 1; i >= 0; i--) {
-    if (array2d[i][0] != null && array2d[i][0] != '') {
-      return i + 1;
-    };
-  };
-};
 
 
 function price2VendorCode_Test() {
@@ -320,7 +284,6 @@ function sheetByRange(cell) {
   return sheetById(cell.getGridId());
 }
 
-
 function sheetById(id) {
   // вернуть лист по id
 
@@ -329,4 +292,16 @@ function sheetById(id) {
       return s.getSheetId() === id;
     }
   )[0];
+}
+
+function array2d2Range(cell, a2d) {
+
+  // массив 2мерный вставить на лист
+
+  let sheet_id = cell.getGridId();
+  let sheet_ob = sheetById(sheet_id);
+  let row_numb = cell.getRow();
+  let col_numb = cell.getColumn();
+
+  sheet_ob.getRange(row_numb, col_numb, a2d.length, a2d[0].length).setValues(a2d);
 }
