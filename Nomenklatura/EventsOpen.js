@@ -37,23 +37,23 @@ function onOpen() {
 
   ui.createMenu('Прайсы')
 
-    .addItem('Обрамить', 'formulaCodeFind')
+    // .addItem('Обрамить', 'formulaCodeFind')
 
     .addItem('Дубликаты', 'selectionDuplicates')
 
-    .addItem('Нули формат', 'selectionNullFormatted')
+    // .addItem('Нули формат', 'selectionNullFormatted')
 
     .addSeparator()
 
-    .addSubMenu(ui.createMenu('Sub-menu')
+    // .addSubMenu(ui.createMenu('Sub-menu')
 
-      .addItem('Тест', 'sheetActive'))
+    //   .addItem('Тест', 'sheetActive'))
 
     .addToUi();
 
 }
 
-function formulaCodeFind() {
+function formulaCodeFind_STOP() {
 
   // ячейки выделенные обрамить слева и справа
   const column = columnBySheet();

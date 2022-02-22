@@ -17,10 +17,7 @@ function rangePriceColumnUpade() {
   if (headersOk(sheet_Sour, sheet_Dest) === false) {
 
     let warning = 'Ожидаемые заголовки НЕ совпали. \n Выход!'
-
-    if (sheet_Dest.getName().indexOf('копия') === -1) {
-      Browser.msgBox(warning);
-    }
+    Browser.msgBox(warning);
     Logger.log(warning);
 
   } else {
@@ -64,7 +61,9 @@ function A2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_C
         let row_Price = map_Arti.get(artic);
         let price = a2_Price_Range[row][col];
 
-        a2_Price_Colum[row_Price][0] = price;
+        if (String(price).indexOf("найден") < 0) {
+          a2_Price_Colum[row_Price][0] = price;
+        }
       }
     }
   }
@@ -87,22 +86,38 @@ function rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Price
   sheet_Logg.clear();
 
   let cell = sheet_Logg.getRange('A1')
-  let a2 = [['Лог обновления цен сводная таблица из Прайс без НДС', '', Utilities.formatDate(new Date(), "GMT+3", "yyyy-MM-dd HH:mm:ss' мск'")]];
-  array2d2Range(cell, a2)
+  let valu = 'Лог обновления "сводная таблица" столбец "Прайс без НДС" ' + Utilities.formatDate(new Date(), "GMT+3", "yyyy-MM-dd HH:mm:ss' мск'");
+  cell.setValue(valu);
 
-  cell = sheet_Logg.getRange('A3')
-  a2 = [['Было', 'Стало']]
-  array2d2Range(cell, a2)
-
-  a2_Column_Artics
   cell = sheet_Logg.getRange('A4');
-  array2d2Range(cell, a2_Column_Artics)
+  array2d2Range(cell, a2_Column_Artics);
 
+  a2_Column_Prices_Old[0][0] = 'Было';
   cell = sheet_Logg.getRange('B4');
-  array2d2Range(cell, a2_Column_Prices_Old)
+  array2d2Range(cell, a2_Column_Prices_Old);
 
+  a2_Column_Prices[0][0] = 'Стало';
   cell = sheet_Logg.getRange('C4');
   array2d2Range(cell, a2_Column_Prices);
+
+  // копировать массив 2мерный не просто
+  const a2_Diff = JSON.parse(JSON.stringify(a2_Column_Prices))
+  // заменить в столбце все значения на формулу
+  arrayColumFillFormula(a2_Diff, 1, 0, 4);
+  a2_Diff[0][0] = 'Сравнение';
+
+  cell = sheet_Logg.getRange('D4');
+  array2d2Range(cell, a2_Diff);
+}
+
+function arrayColumFillFormula(a2, rowStart, col, shift) {
+  // заменить в столбце все значения на формулу
+
+  for (let row = rowStart; row < a2.length; row++) {
+    let rowFormu = row + shift;
+    let formula_ = '=B' + rowFormu + '=C' + rowFormu;
+    a2[row][col] = formula_;
+  }
 }
 
 function headersOk(sheet_Sour, sheet_Dest) {
@@ -186,7 +201,7 @@ function sheetById(id) {
 
 function price2VendorCode_Test() {
 
-  cell = SpreadsheetApp.getActive().getSheetByName('Прайс без НДС (копия)').getRange(8, 4).getFormula();
+  cell = SpreadsheetApp.getActive().getSheetByName('Прайс без НДС (копия) с формулами').getRange(8, 4).getFormula();
 
   price2VendorCode(cell);
 }
@@ -196,6 +211,11 @@ function price2VendorCode(formu) {
   // UDF из тексту формулы извлекает код 1С,
   // по коду 1С ищет на листе строку с этим кодом,
   // если в строке есть артикул вернёт его или cell
+  // формула на листе, использующая эту формулу
+  // =ЕСЛИ(ЕОШИБКА(FORMULATEXT(C4));C4;
+  //    ПОДСТАВИТЬ(
+  //      price2VendorCode(FORMULATEXT(C4));
+  // СИМВОЛ(34);""))
 
   // нужны формулы без пробелов
   formu.replaceAll(' ', '');
