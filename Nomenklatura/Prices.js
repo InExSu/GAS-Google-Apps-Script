@@ -46,26 +46,74 @@ function rangePriceColumnUpade() {
   }
 }
 
+function priceGrowths() {
+  let a2_Artics = [['z', 'артик1']];
+  let a2_ArticNames = [
+    ['', '', ''],
+    ['артик1', '', 'артик1 рост 1'],
+    ['артик1', '', 'артик1 рост 2']];
+  let a2_Column_Prices = [
+    [''],
+    ['было']];
+
+  priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices)
+}
 function priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices) {
   // Проходом по диапазону артикулов из прайса,
   // найти артикул в массиве a2_ArticNames,
   // взять наименование,
   // в наименовании отсечь по /\d\sрост или по "рост".
-  // по номеру строки взять новую цену из a2_Column_Prices.
+  // по номеру строки a2_ArticNames взять новую цену из a2_Column_Prices.
   // Проходом по столбцу название,
-  // если наименование начинаеся с и в нём есть слово рост,
+  // если наименование начинаеся со значения без роста и в нём есть слово "рост",
   // то в эту же строку столбца цена проставить цену
 
   let artic = '';
   let name_ = '';
+  let a1_Gr = '';
   let map_Artic_Name = Array2D_ColumnS_2_Map(a2_ArticNames, 0, 2)
   for (let row = 0; row < a2_Artics.length; row++) {
     for (let col = 0; col < a2_Artics[0].length; col++) {
       artic = a2_Artics[row][col];
-      name_ = Array2D_Column_2_Map()
+      if (a2_Artics.has(artic)) {
+        name_ = map_Artic_Name.get[artic];
+        a1_Gr = name_.split(/\d\sрост/i); // цифра пробел рост
+        if (a1_Gr.length > 0) {
+
+        } else {
+          a1_Gr = name_.split('рост');
+        }
+
+      }
+
     }
   }
 }
+
+function nameGrowths(string) {
+  // вернуть слева от роста
+  // для случаев^
+  // (3 рост)
+  // РОСТ 1
+
+  let a1 = [];
+  let noGrowth = '';
+
+  a1 = string.split(/\d\sрост/i);
+
+  if (a1[0].length > 0) {
+    noGrowth = a1[0]
+  } else {
+    a1 = string.split('рост')
+    if (a1[0].length > 0) {
+      noGrowth = a1[0]
+    }
+  }
+
+  return noGrowth;
+}
+
+console.log(nameGrowths(''));
 
 function a2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum) {
   // Словарь артикулов - артикул: номер строки
