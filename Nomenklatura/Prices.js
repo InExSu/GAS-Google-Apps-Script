@@ -140,7 +140,7 @@ function a2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_C
         let price = a2_Price_Range[row][col];
 
         if (String(price).indexOf("найден") < 0) {
-          a2_Price_Colum[row_Price][0] = price;
+          a2_Price_Colum[row_Price][0] = convert2FloatCommaPointIfPossible(price);
         }
       }
     }

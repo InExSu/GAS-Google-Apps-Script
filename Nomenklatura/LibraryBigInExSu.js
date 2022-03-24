@@ -998,6 +998,7 @@ function convert2FloatCommaPointIfPossible(value_old) {
 
   if (digitsCommaPointSpace(value_old)) {
     let value_new = value_old.replace(",", ".");
+    value_new = value_new.replace(" ", "");
     value_new = convertIfPossible(value_new, parseFloat);
     return value_new;
   }
@@ -1098,4 +1099,16 @@ function rangeValues_2_Array() {
   Logger.log(array2[0]);
   Logger.log(array2[0][0]);
   console.log(array2[0][0]);
+}
+
+function cellDigit_Test() {
+  const sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Ошибки');
+  const cell_ = sheet.getRange('A1')
+  let val = '2 2,3';
+
+  // val = val.replace(' ','');
+  // val = val.replace(',','.');
+  // val = parseFloat(val);
+  val = convert2FloatCommaPointIfPossible(val);
+  cell_.setValue(val);
 }
