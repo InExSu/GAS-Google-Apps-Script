@@ -29,10 +29,13 @@ function rangePriceColumnUpade() {
     const map_Artics = Array2D_2_Map(a2_Column_Artics);
 
     const range_Column_Prices = sheet_Dest.getRange('J:J');
-    const a2_Column_Prices = range_Column_Prices.getValues();
+    let a2_Column_Prices = range_Column_Prices.getValues();
 
     // копировать массив 2мерный 
-    const a2_Column_Prices_Old = JSON.parse(JSON.stringify(a2_Column_Prices))
+    let a2_Column_Prices_Old = JSON.parse(JSON.stringify(a2_Column_Prices))
+
+    a2_Column_Prices = a2_Column_Prices.map(convert2FloatCommaPointIfPossible);
+    a2_Column_Prices_Old = a2_Column_Prices_Old.map(convert2FloatCommaPointIfPossible);
 
     a2PriceColumnUpdate(a2_Artics, a2_Prices, map_Artics, a2_Column_Prices);
 
@@ -44,7 +47,7 @@ function rangePriceColumnUpade() {
 
     rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices);
 
-    range_Column_Prices.setValues(a2_Column_Prices);
+    // range_Column_Prices.setValues(a2_Column_Prices);
 
     sheet_Logg.activate();
 
