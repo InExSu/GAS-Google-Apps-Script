@@ -37,7 +37,7 @@ function onOpen() {
 
   ui.createMenu('Прайсы')
 
-    // .addItem('Обрамить', 'formulaCodeFind')
+    .addItem('Обрамить', 'formulaCodeFind')
 
     .addItem('Дубликаты', 'selectionDuplicates')
 
@@ -53,7 +53,7 @@ function onOpen() {
 
 }
 
-function formulaCodeFind_STOP() {
+function formulaCodeFind() {
 
   // ячейки выделенные обрамить слева и справа
   const column = columnBySheet();

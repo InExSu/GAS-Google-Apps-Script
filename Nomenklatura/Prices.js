@@ -31,11 +31,15 @@ function rangePriceColumnUpade() {
     const range_Column_Prices = sheet_Dest.getRange('J:J');
     const a2_Column_Prices = range_Column_Prices.getValues();
 
-    // копировать массив 2мерный не просто
+    // копировать массив 2мерный 
     const a2_Column_Prices_Old = JSON.parse(JSON.stringify(a2_Column_Prices))
 
     A2PriceColumnUpdate(a2_Artics, a2_Prices, map_Artics, a2_Column_Prices);
 
+    // В "Прайс без НДС" для разных ростов указан один артикул.
+    // нужно по этому артикулу установить этуже цену для других ростов
+    const a2_Names = sheet_Dest.getRange('D:D').getValues();
+    
     range_Column_Prices.setValues(a2_Column_Prices);
 
     rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices);
@@ -100,7 +104,7 @@ function rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Price
   cell = sheet_Logg.getRange('C4');
   array2d2Range(cell, a2_Column_Prices);
 
-  // копировать массив 2мерный не просто
+  // копировать массив 2мерный
   const a2_Diff = JSON.parse(JSON.stringify(a2_Column_Prices))
   // заменить в столбце все значения на формулу
   arrayColumFillFormula(a2_Diff, 1, 0, 4);

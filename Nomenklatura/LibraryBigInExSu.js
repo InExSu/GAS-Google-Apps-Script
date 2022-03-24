@@ -3,6 +3,19 @@
 const DIGITS_COMMA_POINT = '0123456789,.';
 const DIGITS_COMMA_POINT_SPACE = '0123456789,. ';
 
+function Range_Rows_Test() {
+  let ssheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Log');
+
+  let rColu1 = ssheet.getRange('D1:D2');
+  let a2 = rColu1.getValues();
+  Logger.log(a2);
+
+  let rColu2 = ssheet.getRange('D1:E2');
+  a2 = rColu2.getValues();
+  Logger.log(a2);
+
+}
+
 function Array2D_Update_by_Map_Test() {
   let a2d_New = [
     ['CodeSour', 'ValueSour'],
@@ -191,12 +204,6 @@ function Array2D_Column_Find_In_Row(array2d, row, string_find) {
     }
   }
   return -1;
-}
-
-function Range_Rows_Test() {
-  let ssheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('сводная таблица (копия)');
-  let rrange = ssheet.getRange('B2:D9');
-  // Logger.log(Range_Rows(rrange, 1).getValues());
 }
 
 function Range_Rows(range_In, rows_count) {
@@ -1023,4 +1030,15 @@ function a2FindRowCol(a2, val) {
   }
 }
 
-Array1D_2_HeadNumbers_LookUp_Test();
+function rangeValues_2_Array() {
+  // как выгдядит массив 2мерный из дипазона? вот так
+  // [[Код 1С], []]
+  const oSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  let array2 = oSheet.getRange("A1:A2").getValues();
+  Logger.log(array2);
+  array2 = oSheet.getRange("A1:B2").getValues();
+  Logger.log(array2);
+  Logger.log(array2[0]);
+  Logger.log(array2[0][0]);
+  console.log(array2[0][0]);
+}
