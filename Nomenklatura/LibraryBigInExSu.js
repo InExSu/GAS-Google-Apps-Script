@@ -299,6 +299,63 @@ function Array2D_Column_2_Map(array2d, column_key) {
   return map_return;
 }
 
+function Array2D_ColumnS_2_Map_Test() {
+  // тест создания массива ассоциативного из 2мерного
+  let a2 = [
+    [0, 1, 2], // строка 0  
+    [3, 4, 5]  // строка 1  
+  ];
+  let map = Array2D_ColumnS_2_Map(a2, 0, 2);
+  if (map.size == 2) {
+    // Logger.log('Array2D_2_Map_Test = OK');
+  } else {
+    // Logger.log('Array2D_2_Map_Test = Ошибка');
+  }
+  // тестирую повтор ключа
+  a2 = [
+    [0, 1, 2], // строка 0  
+    [0, 4, 5] // строка 1  
+  ];
+  map = Array2D_ColumnS_2_Map(a2, 0, 1);
+  if (map.size == 1) {
+    // Logger.log('Array2D_2_Map_Test повтор = OK');
+  } else {
+    // Logger.log('Array2D_2_Map_Test повтор = Ошибка');
+  }
+  // тестирую регистр символов
+  a2 = [
+    ["Z", 1, 2], // строка 0  
+    ["z", 4, 5] // строка 1  
+  ];
+  map = Array2D_ColumnS_2_Map(a2, 0, 2);
+  if (map.size == 2) {
+    // Logger.log('Array2D_2_Map_Test регистр = OK');
+  } else {
+    // Logger.log('Array2D_2_Map_Test регистр = Ошибка');
+  }
+
+}
+function Array2D_ColumnS_2_Map(array2d, column_key, column_Value) {
+  // из массива 2мерного вернуть словарь - массив ассоциативный: 
+  // значение столбца ключа и значение в столбце column_Value
+
+  let map_return = new Map();
+  let val = '';
+
+  for (var row = 0; row < array2d.length; row++) {
+
+    val = String(array2d[row][column_key]);
+
+    if (val.length > 0) {
+
+      // если ключ повторяется, то обновится значение
+      map_return.set(val, array2d[row][column_Value]);
+    }
+  }
+  return map_return;
+}
+
+
 function Sheet2Array2DTest() {
   const oSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   // Logger.log(oSheet.getName())

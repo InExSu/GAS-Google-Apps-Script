@@ -56,6 +56,15 @@ function priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices) {
   // если наименование начинаеся с и в нём есть слово рост,
   // то в эту же строку столбца цена проставить цену
 
+  let artic = '';
+  let name_ = '';
+  let map_Artic_Name = Array2D_ColumnS_2_Map(a2_ArticNames, 0, 2)
+  for (let row = 0; row < a2_Artics.length; row++) {
+    for (let col = 0; col < a2_Artics[0].length; col++) {
+      artic = a2_Artics[row][col];
+      name_ = Array2D_Column_2_Map()
+    }
+  }
 }
 
 function a2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum) {
@@ -311,23 +320,6 @@ function Array2D_2_Map(array2d) {
     }
   }
   return map_return;
-}
-
-function sheetByRange(cell) {
-  // вернуть лист по диапазону
-  // как в Excel range.Parent
-
-  return sheetById(cell.getGridId());
-}
-
-function sheetById(id) {
-  // вернуть лист по id
-
-  return SpreadsheetApp.getActive().getSheets().filter(
-    function (s) {
-      return s.getSheetId() === id;
-    }
-  )[0];
 }
 
 function array2d2Range(cell, a2d) {
