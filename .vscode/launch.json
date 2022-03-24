@@ -4,7 +4,6 @@
     // Для получения дополнительной информации посетите: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
         {
             "name": "Attach",
             "port": 9229,
@@ -21,7 +20,7 @@
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}\\Nomenklatura\\LibraryBigInExSu.js"
+            "program": "${workspaceFolder}\\Nomenklatura\\Prices.js"
         }
     ]
 }

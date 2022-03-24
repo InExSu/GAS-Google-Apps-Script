@@ -40,13 +40,18 @@ function rangePriceColumnUpade() {
     // нужно по этому артикулу установить туже цену для других ростов
     const a2_ArticNames = sheet_Dest.getRange('B:D').getValues();
 
-    range_Column_Prices.setValues(a2_Column_Prices);
+    // priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices);
 
     rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices);
+
+    range_Column_Prices.setValues(a2_Column_Prices);
+
+    sheet_Logg.activate();
+
   }
 }
 
-function priceGrowths() {
+function priceGrowths_Test() {
   let a2_Artics = [['z', 'артик1']];
   let a2_ArticNames = [
     ['', '', ''],
@@ -56,7 +61,7 @@ function priceGrowths() {
     [''],
     ['было']];
 
-  priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices)
+  priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices);
 }
 function priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices) {
   // Проходом по диапазону артикулов из прайса,
