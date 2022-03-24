@@ -34,15 +34,11 @@ function rangePriceColumnUpade() {
     // копировать массив 2мерный 
     let a2_Column_Prices_Old = JSON.parse(JSON.stringify(a2_Column_Prices))
 
-    a2_Column_Prices = a2_Column_Prices.map(convert2FloatCommaPointIfPossible);
-    a2_Column_Prices_Old = a2_Column_Prices_Old.map(convert2FloatCommaPointIfPossible);
-
     a2PriceColumnUpdate(a2_Artics, a2_Prices, map_Artics, a2_Column_Prices);
 
     // В "Прайс без НДС" для разных ростов указан один артикул.
     // нужно по этому артикулу установить туже цену для других ростов
     const a2_ArticNames = sheet_Dest.getRange('B:D').getValues();
-
     // priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices);
 
     rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices);

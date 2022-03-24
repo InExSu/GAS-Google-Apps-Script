@@ -955,39 +955,39 @@ function convertIfPossible(value, method) {
 }
 
 function convert2FloatCommaPointIfPossible_Test() {
-  let value = '1,1';
-  let wante = 1.1;
+  let value = '2 100 830,00';
+  let wante = 2100830;
   let conve = convert2FloatCommaPointIfPossible(value);
   if (conve != wante) {
-    // Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
+    Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
   }
 
   value = '2,1z';
   wante = '2,1z';
   conve = convert2FloatCommaPointIfPossible(value);
   if (conve != wante) {
-    // Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
+    Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
   }
 
   value = '3.1';
   wante = 3.1;
   conve = convert2FloatCommaPointIfPossible(value);
   if (conve != wante) {
-    // Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
+    Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
   }
 
   value = '4.1 Z';
   wante = '4.1 Z';
   conve = convert2FloatCommaPointIfPossible(value);
   if (conve != wante) {
-    // Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
+    Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
   }
 
   value = 'Z';
   wante = 'Z';
   conve = convert2FloatCommaPointIfPossible(value);
   if (conve != wante) {
-    // Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
+    Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
   }
 }
 
@@ -996,15 +996,43 @@ function convert2FloatCommaPointIfPossible(value_old) {
   // с учётом запятой и точки
   // сначала убедиться, что в строке только нужные символы
 
+  // для использования в map массива из диапазона
+  if (Array.isArray(value_old)) {
+    value_old = value_old.join();
+  }
+
   if (digitsCommaPointSpace(value_old)) {
-    let value_new = value_old.replace(",", ".");
-    value_new = value_new.replace(" ", "");
-    value_new = convertIfPossible(value_new, parseFloat);
-    return value_new;
+    if (value_old % 1 != 0) {
+      let value_new = value_old.replace(/\s/g, '');
+      value_new = value_new.replace(",", ".");
+      value_new = convertIfPossible(value_new, parseFloat);
+      return value_new;
+    }
   }
   return value_old;
 }
 
+function isNumber_Test() {
+  console.log('число  860', isNumber(860));
+  console.log('строка 860', isNumber('860'));
+  console.log('строка 860.0', isNumber('860.0'));
+  console.log('строка 2 100 830,00', isNumber('2 100 830,00'));
+}
+
+function isNumber(str) {
+  // является ли строка числом
+
+  // if (typeof str != "string") return false // we only process strings!
+  // // could also coerce to string: str = ""+str
+  // return !isNaN(str) && !isNaN(parseFloat(str))
+  
+  // if (str % 1 == 0)
+  //   return true;
+  // else
+  //   return false;
+
+  return (str % 1 == 0);
+}
 
 function digitsCommaPointSpace(str) {
 
