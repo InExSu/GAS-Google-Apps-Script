@@ -54,15 +54,18 @@ function priceGrowths_Test() {
   let a2_Svodnya_BD = [
     ['0', '1', '2'],
     ['артик1', '', 'артик1 назв рост 1'],
-    ['артик2', '', 'артик2 назв рост 2'],
+    ['артик2', '', 'артик1 назв рост 2'],
     ['артик3', '', 'артик3 без р о с т а']];
   let a2_Column_Prices_J = [
     [0],
-    [1],
-    [2],
+    [9],
+    [9],
     [3]];
 
   priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
+
+  console_log(a2_Column_Prices_J);
+
 }
 
 function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J) {
@@ -78,9 +81,8 @@ function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Price
 
   let artic = '';
   let name_ = '';
-  let a1_Gr = '';
   let price = 0;
-  let map_Artics_Row = Array2D_Column_2_Map(a2_Svodnya_BD, 0)
+  const map_Artics_Row = Array2D_Column_2_Map(a2_Svodnya_BD, 0)
 
   let nameCut = '';
   const COL_2 = 2;
@@ -92,26 +94,28 @@ function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Price
 
       if (map_Artics_Row.has(artic)) {
 
-        let row_Found = map_Artics_Row.get[artic]
+        let row_Found = map_Artics_Row.get(artic);
+
+        if (row_Found === 'undefined') {
+          debugger;
+        }
 
         name_ = a2_Svodnya_BD[row_Found][2];
 
-        price = a2_Column_Prices_J[0];
+        if (name_.search(/рост/) > -1) {
 
-        a1_Gr = name_.split(/\d\sрост/i); // цифра пробел рост
+          price = a2_Column_Prices_J[row_Found][0];
 
-        if (a1_Gr.length = 1) {
+          nameCut = nameGrowths(name_);
 
-          a1_Gr = name_.split('рост');
+          if (nameCut !== '') {
 
-        }
+            // проход по "Полное наименование" - проставить price
+            A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price);
 
-        if (a1_Gr.length > 0) {
-          nameCut = a1_Gr[0];
-
-          // проход по "Полное наименование"
-          A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price);
-
+          } else {
+            debugger;
+          }
         }
       }
     }
@@ -137,13 +141,16 @@ function A2s_Match_Test() {
 
   A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price);
 
+  console_log(a2_Column_Prices_J);
+}
+
+function console_log(a2_Column_Prices_J) {
   console.log('a2_Column_Prices_J[0] = ' + a2_Column_Prices_J[0]);
   console.log('a2_Column_Prices_J[1] = ' + a2_Column_Prices_J[1]);
   console.log('a2_Column_Prices_J[2] = ' + a2_Column_Prices_J[2]);
   console.log('a2_Column_Prices_J[3] = ' + a2_Column_Prices_J[3]);
 
 }
-
 
 function A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price) {
   // если значение начинается с nameCut, подставить цену в a2_Column_Prices_J
@@ -196,15 +203,15 @@ function nameGrowths(stringIn) {
 
   if (a1.length > 1) {
 
-    noGrowth = a1[0]
+    noGrowth = a1[0];
 
   } else {
 
     a1 = stringIn.split(/\sрост\s/i)
 
-    if (a1.length > 1) {
-      noGrowth = a1[0]
-    }
+    if (a1.length > 1)
+      noGrowth = a1[0];
+
   }
 
   return noGrowth;
@@ -442,7 +449,7 @@ function Array2D_Column_2_Map(array2d, column_key) {
   let map_return = new Map();
   let val = '';
 
-  for (var row = 0; row < array2d.length; row++) {
+  for (let row = 0; row < array2d.length; row++) {
 
     val = String(array2d[row][column_key]);
 
