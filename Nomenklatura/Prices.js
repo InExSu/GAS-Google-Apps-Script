@@ -117,7 +117,7 @@ function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Price
   }
 }
 
-function A2s_Match() {
+function A2s_Match_Test() {
   let nameCut = '';
   let a2_Svodnya_BD = '';
   let COL_2 = '';
@@ -147,9 +147,21 @@ function A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price) {
 }
 
 function nameGrowths_Test() {
+  let name = 'Издел (0 РосТ)';
+  let noGr = nameGrowths(name);
+  console.log(noGr);
+
+  name = 'Издел РосТ 2';
+  noGr = nameGrowths(name);
+  console.log(noGr);
+
+  name = 'Издел без р о с т а';
+  noGr = nameGrowths(name);
+  console.log(noGr);
 
 }
-function nameGrowths(string) {
+
+function nameGrowths(stringIn) {
   // вернуть слева от роста
   // для случаев:
   // (3 рост)
@@ -158,13 +170,15 @@ function nameGrowths(string) {
   let a1 = [];
   let noGrowth = '';
 
-  a1 = string.split(/\d\sрост/i);
+  a1 = stringIn.split(/\d\sрост/i);
 
   if (a1[0].length > 0) {
+
     noGrowth = a1[0]
+
   } else {
 
-    a1 = string.split('рост')
+    a1 = stringIn.split(/\sрост\s/i)
 
     if (a1[0].length > 0) {
       noGrowth = a1[0]
@@ -173,8 +187,6 @@ function nameGrowths(string) {
 
   return noGrowth;
 }
-
-console.log(nameGrowths(''));
 
 function a2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_Colum) {
   // Словарь артикулов - артикул: номер строки
@@ -458,4 +470,4 @@ function LoopNO() {
 
 }
 
-LoopNO();
+nameGrowths_Test();
