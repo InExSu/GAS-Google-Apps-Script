@@ -61,8 +61,9 @@ function priceGrowths_Test() {
 
   priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
 }
+
 function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J) {
-  // Проходом по диапазону артикулов из прайса,
+  // Проходом по диапазону артикулов листа a2_Price_bez_NDS_Prices_LQ ,
   // найти артикул в массиве a2_Svodnya_BD,
   // взять номер строки a2_Svodnya_BD,
   // взять наименование
@@ -75,17 +76,25 @@ function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Price
   let artic = '';
   let name_ = '';
   let a1_Gr = '';
-  let map_Artic_Name = Array2D_ColumnS_2_Map(a2_Svodnya_BD, 0, 2)
-  let nameCut = ';'
+  let price = 0;
+  let row_Found = -1;
+  let map_Artics_Row = Array2D_Column_2_Map(a2_Svodnya_BD, 0)
+
+  let nameCut = '';
+  const COL_2 = 2;
 
   for (let row = 0; row < a2_Price_bez_NDS_Prices_LQ.length; row++) {
     for (let col = 0; col < a2_Price_bez_NDS_Prices_LQ[0].length; col++) {
 
       artic = a2_Price_bez_NDS_Prices_LQ[row][col];
 
-      if (map_Artic_Name.has(artic)) {
+      if (map_Artics_Row.has(artic)) {
 
-        name_ = map_Artic_Name.get[artic];
+        row_Found = map_Artics_Row.get[artic]
+
+        name_ = a2_Svodnya_BD[row][2];
+
+        price = a2_Column_Prices_J[0];
 
         a1_Gr = name_.split(/\d\sрост/i); // цифра пробел рост
 
@@ -99,6 +108,7 @@ function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Price
           nameCut = a1_Gr[0];
 
           // проход по "Полное наименование"
+          A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price);
 
         }
       }
@@ -106,11 +116,26 @@ function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Price
   }
 }
 
-function A2s_Match(nameCut, a2_Svodnya_BD, col_D, a2_Column_Prices_J) {
-  // если значение начинается с nameCut подставить цену в a2_Column_Prices_J
+function A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price) {
+  // если значение начинается с nameCut, подставить цену в a2_Column_Prices_J
   // a2_Svodnya_BD и a2_Column_Prices_J одинаковы по высоте
-  
+
+  let str = '';
+  let lft = '';
+
+  for (row = 0; row < a2_Svodnya_BD; row++) {
+
+    str = a2_Svodnya_BD[row][COL_2];
+    lft = str.slice(0, nameCut.length);
+
+    if (lft.toUpperCase() === nameCut.toUpperCase()) {
+
+      a2_Column_Prices_J[row][0] = price;
+
+    }
+  }
 }
+
 function nameGrowths(string) {
   // вернуть слева от роста
   // для случаев^
