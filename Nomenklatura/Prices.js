@@ -118,14 +118,29 @@ function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Price
 }
 
 function A2s_Match_Test() {
-  let nameCut = '';
-  let a2_Svodnya_BD = '';
-  let COL_2 = '';
-  let a2_Column_Prices_J = '';
+
+  let a2_Svodnya_BD = [
+    ['0', '1', '2'],
+    ['артик1', '', 'артик1 рост 1'],
+    ['артик2', '', 'артик1 рост 2'],
+    ['артик3', '', 'без р о с т а']];
+  let a2_Column_Prices_J = [
+    [0],
+    [1],
+    [2],
+    [3]];
+
+  let nameCut = 'артик1';
+  const COL_2 = 2;
+  let price = 234.56;
 
   A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price);
 
+  console.log('a2_Column_Prices_J[1] = ' + a2_Column_Prices_J[1]);
+
 }
+
+
 function A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price) {
   // если значение начинается с nameCut, подставить цену в a2_Column_Prices_J
   // a2_Svodnya_BD и a2_Column_Prices_J одинаковы по высоте
@@ -133,7 +148,7 @@ function A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price) {
   let str = '';
   let lft = '';
 
-  for (row = 0; row < a2_Svodnya_BD; row++) {
+  for (let row = 0; row < a2_Svodnya_BD.length; row++) {
 
     str = a2_Svodnya_BD[row][COL_2];
     lft = str.slice(0, nameCut.length);
@@ -147,17 +162,20 @@ function A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price) {
 }
 
 function nameGrowths_Test() {
-  let name = 'Издел (0 РосТ)';
-  let noGr = nameGrowths(name);
-  console.log(noGr);
+  let name = '';
+  let noGr = '';
+
+  // name = 'Издел (0 РосТ)';
+  // noGr = nameGrowths(name);
+  // console.log(noGr);
 
   name = 'Издел РосТ 2';
   noGr = nameGrowths(name);
   console.log(noGr);
 
-  name = 'Издел без р о с т а';
-  noGr = nameGrowths(name);
-  console.log(noGr);
+  // name = 'Издел без р о с т а';
+  // noGr = nameGrowths(name);
+  // console.log(noGr);
 
 }
 
@@ -172,7 +190,7 @@ function nameGrowths(stringIn) {
 
   a1 = stringIn.split(/\d\sрост/i);
 
-  if (a1[0].length > 0) {
+  if (a1.length > 1) {
 
     noGrowth = a1[0]
 
@@ -180,7 +198,7 @@ function nameGrowths(stringIn) {
 
     a1 = stringIn.split(/\sрост\s/i)
 
-    if (a1[0].length > 0) {
+    if (a1.length > 1) {
       noGrowth = a1[0]
     }
   }
@@ -470,4 +488,5 @@ function LoopNO() {
 
 }
 
-nameGrowths_Test();
+// nameGrowths_Test();
+A2s_Match_Test();
