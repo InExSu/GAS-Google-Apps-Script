@@ -1,20 +1,19 @@
-// Переделка прайса
-// из формул с кодом разово сделать копию с артикулами.
-// На листе будут три таблицы:
-// слева    версия для печати - цены вбиваются пользователями.
-// в центре версия с артикулами.
-// По этим  версиям, скрипт обновления цен в листе "сводная таблица"
-// создаст справа отчёт работы в третью таблицу.
-
 function rangePriceColumnUpade() {
+  // Переделка прайса
+  // из формул с кодом разово сделать копию с артикулами.
+  // На листе будут три таблицы:
+  // слева    версия для печати - цены вбиваются пользователями.
+  // в центре версия с артикулами.
+  // По этим  версиям, скрипт обновления цен в листе "сводная таблица"
+  // создаст справа отчёт работы в третью таблицу.
 
   const spread = SpreadsheetApp.getActive();
 
-  const sheet_Sour = spread.getSheetByName('Прайс без НДС');
-  const sheet_Dest = spread.getSheetByName('сводная таблица');
+  const sheet_Price_bez_NDS = spread.getSheetByName('Прайс без НДС');
+  const sheet_Svodnaya = spread.getSheetByName('сводная таблица');
   const sheet_Logg = spread.getSheetByName('Log');
 
-  if (headersOk(sheet_Sour, sheet_Dest) === false) {
+  if (headersOk(sheet_Price_bez_NDS, sheet_Svodnaya) === false) {
 
     let warning = 'Ожидаемые заголовки НЕ совпали. \n Выход!'
     Browser.msgBox(warning);
@@ -22,28 +21,28 @@ function rangePriceColumnUpade() {
 
   } else {
 
-    const a2_Artics = sheet_Sour.getRange('L:Q').getValues();
-    const a2_Prices = sheet_Sour.getRange('C:H').getValues();
+    const a2_Price_bez_NDS_Prices_LQ = sheet_Price_bez_NDS.getRange('L:Q').getValues();
+    const a2_Price_bez_NDS_Artics_CH = sheet_Price_bez_NDS.getRange('C:H').getValues();
 
-    const a2_Column_Artics = sheet_Dest.getRange('B:B').getValues();
-    const map_Artics = Array2D_2_Map(a2_Column_Artics);
+    const a2_Svodnaya_Artics_B = sheet_Svodnaya.getRange('B:B').getValues();
+    const map_Artics_Svodnaya_B = Array2D_2_Map(a2_Svodnaya_Artics_B);
 
-    const range_Column_Prices = sheet_Dest.getRange('J:J');
-    let a2_Column_Prices = range_Column_Prices.getValues();
+    const range_Svodnaya_J = sheet_Svodnaya.getRange('J:J');
+    let a2_Column_Prices_J = range_Svodnaya_J.getValues();
 
     // копировать массив 2мерный 
-    let a2_Column_Prices_Old = JSON.parse(JSON.stringify(a2_Column_Prices))
+    let a2_Column_Prices_Old = JSON.parse(JSON.stringify(a2_Column_Prices_J))
 
-    a2PriceColumnUpdate(a2_Artics, a2_Prices, map_Artics, a2_Column_Prices);
+    a2PriceColumnUpdate(a2_Price_bez_NDS_Prices_LQ, a2_Price_bez_NDS_Artics_CH, map_Artics_Svodnaya_B, a2_Column_Prices_J);
 
     // В "Прайс без НДС" для разных ростов указан один артикул.
     // нужно по этому артикулу установить туже цену для других ростов
-    const a2_ArticNames = sheet_Dest.getRange('B:D').getValues();
-    // priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices);
+    const a2_Svodnya_BD = sheet_Svodnaya.getRange('B:D').getValues();
+    // priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
 
-    rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices);
+    range_Svodnaya_J.setValues(a2_Column_Prices_J);
 
-    // range_Column_Prices.setValues(a2_Column_Prices);
+    rangePriceColumnUpade_Log(sheet_Logg, a2_Svodnaya_Artics_B, a2_Column_Prices_Old, a2_Column_Prices_J);
 
     sheet_Logg.activate();
 
@@ -51,23 +50,24 @@ function rangePriceColumnUpade() {
 }
 
 function priceGrowths_Test() {
-  let a2_Artics = [['z', 'артик1']];
-  let a2_ArticNames = [
+  let a2_Price_bez_NDS_Prices_LQ = [['z', 'артик1']];
+  let a2_Svodnya_BD = [
     ['', '', ''],
     ['артик1', '', 'артик1 рост 1'],
     ['артик1', '', 'артик1 рост 2']];
-  let a2_Column_Prices = [
+  let a2_Column_Prices_J = [
     [''],
     ['было']];
 
-  priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices);
+  priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
 }
-function priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices) {
+function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J) {
   // Проходом по диапазону артикулов из прайса,
-  // найти артикул в массиве a2_ArticNames,
-  // взять наименование,
+  // найти артикул в массиве a2_Svodnya_BD,
+  // взять номер строки a2_Svodnya_BD,
+  // взять наименование
   // в наименовании отсечь по /\d\sрост или по "рост".
-  // по номеру строки a2_ArticNames взять новую цену из a2_Column_Prices.
+  // по номеру строки a2_Svodnya_BD взять новую цену из a2_Column_Prices_J.
   // Проходом по столбцу название,
   // если наименование начинаеся со значения без роста и в нём есть слово "рост",
   // то в эту же строку столбца цена проставить цену
@@ -75,25 +75,42 @@ function priceGrowths(a2_Artics, a2_ArticNames, a2_Column_Prices) {
   let artic = '';
   let name_ = '';
   let a1_Gr = '';
-  let map_Artic_Name = Array2D_ColumnS_2_Map(a2_ArticNames, 0, 2)
-  for (let row = 0; row < a2_Artics.length; row++) {
-    for (let col = 0; col < a2_Artics[0].length; col++) {
-      artic = a2_Artics[row][col];
-      if (a2_Artics.has(artic)) {
-        name_ = map_Artic_Name.get[artic];
-        a1_Gr = name_.split(/\d\sрост/i); // цифра пробел рост
-        if (a1_Gr.length > 0) {
+  let map_Artic_Name = Array2D_ColumnS_2_Map(a2_Svodnya_BD, 0, 2)
+  let nameCut = ';'
 
-        } else {
+  for (let row = 0; row < a2_Price_bez_NDS_Prices_LQ.length; row++) {
+    for (let col = 0; col < a2_Price_bez_NDS_Prices_LQ[0].length; col++) {
+
+      artic = a2_Price_bez_NDS_Prices_LQ[row][col];
+
+      if (map_Artic_Name.has(artic)) {
+
+        name_ = map_Artic_Name.get[artic];
+
+        a1_Gr = name_.split(/\d\sрост/i); // цифра пробел рост
+
+        if (a1_Gr.length = 1) {
+
           a1_Gr = name_.split('рост');
+
         }
 
-      }
+        if (a1_Gr.length > 0) {
+          nameCut = a1_Gr[0];
 
+          // проход по "Полное наименование"
+
+        }
+      }
     }
   }
 }
 
+function A2s_Match(nameCut, a2_Svodnya_BD, col_D, a2_Column_Prices_J) {
+  // если значение начинается с nameCut подставить цену в a2_Column_Prices_J
+  // a2_Svodnya_BD и a2_Column_Prices_J одинаковы по высоте
+  
+}
 function nameGrowths(string) {
   // вернуть слева от роста
   // для случаев^
@@ -108,7 +125,9 @@ function nameGrowths(string) {
   if (a1[0].length > 0) {
     noGrowth = a1[0]
   } else {
+
     a1 = string.split('рост')
+
     if (a1[0].length > 0) {
       noGrowth = a1[0]
     }
@@ -128,17 +147,21 @@ function a2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_C
   // 			Взять номер строки из словаря
   // 				Вставить в массив цен цену по номеру строки
 
+  let artic = '';
+
   for (let row = 0; row < a2_Arti_Range.length; row++) {
     for (let col = 0; col < a2_Arti_Range[0].length; col++) {
 
-      let artic = a2_Arti_Range[row][col];
+      artic = a2_Arti_Range[row][col];
 
-      if (map_Arti.has(artic)) {
+      if (artic.search(/\d{3}-\d{3}-\d{4}/) > -1) {
 
-        let row_Price = map_Arti.get(artic);
-        let price = a2_Price_Range[row][col];
+        if (map_Arti.has(artic)) {
 
-        if (String(price).indexOf("найден") < 0) {
+          let row_Price = map_Arti.get(artic);
+          let price = a2_Price_Range[row][col];
+
+          let stop = 'да';
           a2_Price_Colum[row_Price][0] = convert2FloatCommaPointIfPossible(price);
         }
       }
@@ -158,7 +181,7 @@ function rangePriceColumnUpade_Log_Test() {
   rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices_New)
 }
 
-function rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices) {
+function rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Prices_Old, a2_Column_Prices_J) {
 
   sheet_Logg.clear();
 
@@ -173,12 +196,12 @@ function rangePriceColumnUpade_Log(sheet_Logg, a2_Column_Artics, a2_Column_Price
   cell = sheet_Logg.getRange('B4');
   array2d2Range(cell, a2_Column_Prices_Old);
 
-  a2_Column_Prices[0][0] = 'Стало';
+  a2_Column_Prices_J[0][0] = 'Стало';
   cell = sheet_Logg.getRange('C4');
-  array2d2Range(cell, a2_Column_Prices);
+  array2d2Range(cell, a2_Column_Prices_J);
 
   // копировать массив 2мерный
-  const a2_Diff = JSON.parse(JSON.stringify(a2_Column_Prices))
+  const a2_Diff = JSON.parse(JSON.stringify(a2_Column_Prices_J))
   // заменить в столбце все значения на формулу
   arrayColumFillFormula(a2_Diff, 1, 0, 4);
   a2_Diff[0][0] = 'Сравнение';
@@ -385,3 +408,16 @@ function array2d2Range(cell, a2d) {
 
   sheet_ob.getRange(row_numb, col_numb, a2d.length, a2d[0].length).setValues(a2d);
 }
+
+function LoopNO() {
+  var names = ["Jack", "Jecci", "Ram", "Tom"];
+  var upperCaseNames = [];
+  // for (let i = 0, totalNames = names.length; i < totalNames; i = i + 1) {
+  //   upperCaseNames[i] = names[i].toUpperCase();
+  // }
+
+  upperCaseNames = names.map(x => x.toUpperCase());
+
+}
+
+LoopNO();
