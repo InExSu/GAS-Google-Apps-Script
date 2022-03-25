@@ -1025,7 +1025,7 @@ function isNumber(str) {
   // if (typeof str != "string") return false // we only process strings!
   // // could also coerce to string: str = ""+str
   // return !isNaN(str) && !isNaN(parseFloat(str))
-  
+
   // if (str % 1 == 0)
   //   return true;
   // else

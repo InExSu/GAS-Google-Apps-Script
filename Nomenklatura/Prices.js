@@ -1,9 +1,4 @@
-function rangePriceColumnUpade_test() {
-
-  rangePriceColumnUpade(true);
-}
-
-function rangePriceColumnUpade(test) {
+function rangePriceColumnUpade() {
   // Переделка прайса
   // из формул с кодом разово сделать копию с артикулами.
   // На листе будут три таблицы:
@@ -16,12 +11,7 @@ function rangePriceColumnUpade(test) {
 
   const sheet_Price_bez_NDS = spread.getSheetByName('Прайс без НДС');
 
-  let sheet_Svodnaya = spread.getSheetByName('сводная таблица (копия)');
-  // if (test) {
-  //   sheet_Svodnaya = spread.getSheetByName('сводная таблица (копия)');
-  // } else {
-  //   sheet_Svodnaya = spread.getSheetByName('сводная таблица');
-  // }
+  let sheet_Svodnaya = spread.getSheetByName('сводная таблица');
 
   const sheet_Logg = spread.getSheetByName('Log');
 
@@ -50,7 +40,7 @@ function rangePriceColumnUpade(test) {
     // В "Прайс без НДС" для разных ростов указан один артикул.
     // нужно по этому артикулу установить туже цену для других ростов
     const a2_Svodnya_BD = sheet_Svodnaya.getRange('B:D').getValues();
-    // priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
+    priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
 
     range_Svodnaya_J.setValues(a2_Column_Prices_J);
 
