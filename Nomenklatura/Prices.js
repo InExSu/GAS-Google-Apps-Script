@@ -50,14 +50,15 @@ function rangePriceColumnUpade() {
 }
 
 function priceGrowths_Test() {
-  let a2_Price_bez_NDS_Prices_LQ = [['z', 'артик1']];
+  let a2_Price_bez_NDS_Prices_LQ = [['0', '1', '2', '3', '4', 'z', 'артик1']];
   let a2_Svodnya_BD = [
-    ['', '', ''],
+    ['0', '1', '2'],
     ['артик1', '', 'артик1 рост 1'],
-    ['артик1', '', 'артик1 рост 2']];
+    ['артик2', '', 'артик1 рост 2'],
+    ['артик3', '', 'без р о с т а']];
   let a2_Column_Prices_J = [
-    [''],
-    ['было']];
+    [123],
+    [0]];
 
   priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
 }
@@ -116,6 +117,15 @@ function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Price
   }
 }
 
+function A2s_Match() {
+  let nameCut = '';
+  let a2_Svodnya_BD = '';
+  let COL_2 = '';
+  let a2_Column_Prices_J = '';
+
+  A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price);
+
+}
 function A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price) {
   // если значение начинается с nameCut, подставить цену в a2_Column_Prices_J
   // a2_Svodnya_BD и a2_Column_Prices_J одинаковы по высоте
@@ -136,9 +146,12 @@ function A2s_Match(nameCut, a2_Svodnya_BD, COL_2, a2_Column_Prices_J, price) {
   }
 }
 
+function nameGrowths_Test() {
+
+}
 function nameGrowths(string) {
   // вернуть слева от роста
-  // для случаев^
+  // для случаев:
   // (3 рост)
   // РОСТ 1
 
