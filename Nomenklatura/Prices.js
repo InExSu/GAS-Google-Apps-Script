@@ -1,4 +1,9 @@
-function rangePriceColumnUpade() {
+function rangePriceColumnUpade_test() {
+
+  rangePriceColumnUpade(true);
+}
+
+function rangePriceColumnUpade(test) {
   // Переделка прайса
   // из формул с кодом разово сделать копию с артикулами.
   // На листе будут три таблицы:
@@ -10,7 +15,14 @@ function rangePriceColumnUpade() {
   const spread = SpreadsheetApp.getActive();
 
   const sheet_Price_bez_NDS = spread.getSheetByName('Прайс без НДС');
-  const sheet_Svodnaya = spread.getSheetByName('сводная таблица');
+
+  let sheet_Svodnaya = spread.getSheetByName('сводная таблица (копия)');
+  // if (test) {
+  //   sheet_Svodnaya = spread.getSheetByName('сводная таблица (копия)');
+  // } else {
+  //   sheet_Svodnaya = spread.getSheetByName('сводная таблица');
+  // }
+
   const sheet_Logg = spread.getSheetByName('Log');
 
   if (headersOk(sheet_Price_bez_NDS, sheet_Svodnaya) === false) {
@@ -487,23 +499,23 @@ function array2d2Range(cell, a2d) {
 
   let sheet_id = cell.getGridId();
   let sheet_ob = sheetById(sheet_id);
-  let row_numb = cell.getRow();
-  let col_numb = cell.getColumn();
+  const row_numb = cell.getRow();
+  const col_numb = cell.getColumn();
 
   sheet_ob.getRange(row_numb, col_numb, a2d.length, a2d[0].length).setValues(a2d);
 }
 
-function LoopNO() {
-  var names = ["Jack", "Jecci", "Ram", "Tom"];
-  var upperCaseNames = [];
-  // for (let i = 0, totalNames = names.length; i < totalNames; i = i + 1) {
-  //   upperCaseNames[i] = names[i].toUpperCase();
-  // }
+// function LoopNO() {
+//   var names = ["Jack", "Jecci", "Ram", "Tom"];
+//   var upperCaseNames = [];
+//   // for (let i = 0, totalNames = names.length; i < totalNames; i = i + 1) {
+//   //   upperCaseNames[i] = names[i].toUpperCase();
+//   // }
 
-  upperCaseNames = names.map(x => x.toUpperCase());
+//   upperCaseNames = names.map(x => x.toUpperCase());
 
-}
+// }
 
 // nameGrowths_Test();
 // A2s_Match_Test();
-priceGrowths_Test();
+// priceGrowths_Test();
