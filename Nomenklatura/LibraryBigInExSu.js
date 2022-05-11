@@ -211,6 +211,7 @@ function Range_Rows(range_In, rows_count) {
   // вернуть строки диапазона
 
   // Parent двухходовочка
+  // вообще-то есть метод получения листа диапазона range.getSheet()
   let sheet_id = range_In.getGridId();
   let sheet_ob = sheetById(sheet_id);
 
@@ -993,7 +994,7 @@ function convert2FloatCommaPointIfPossible_Test() {
 
 function convert2FloatCommaPointIfPossible(value_old) {
   // конвертировать в число с плавающей точкой,
-  // с учётом запятой и точки
+  // с учётом запятой и запятой
   // сначала убедиться, что в строке только нужные символы
 
   // для использования в map массива из диапазона
@@ -1032,6 +1033,29 @@ function isNumber(str) {
   //   return false;
 
   return (str % 1 == 0);
+}
+
+function isNumeric_Test() {
+  console.log('строка 2 100 830,00', isNumeric('2 100 830,00'));
+  console.log('строка 2 100 830.00', isNumeric('2 100 830.00'));
+  console.log('число  860', isNumeric(860));
+  console.log('число  860.12', isNumeric(860.12));
+  console.log('строка 860', isNumeric('860'));
+  console.log('строка 860.0', isNumeric('860.0'));
+  console.log('строка пустая', isNumeric(''));
+}
+
+function isNumeric(str) {
+
+  let s = str;
+
+  if (typeof s === 'string') {
+
+    s = s.replace(/\s/g, '').replace(",", ".");
+
+  }
+
+  return !isNaN(parseFloat(s)) && isFinite(s);
 }
 
 function digitsCommaPointSpace(str) {
@@ -1139,4 +1163,223 @@ function cellDigit_Test() {
   // val = parseFloat(val);
   val = convert2FloatCommaPointIfPossible(val);
   cell_.setValue(val);
+}
+
+function rowsHeightsGet(range, toast) {
+  /**
+   * GET THE ROW HEIGHTS OF A SELECTED RANGE OF A SOURCE SHEET
+   * @param {object} range - Selected source range
+   * @returns {Array.<number>}  Array of row heights for each row
+   * вернуть массив 1мерный высот строк диапазона
+   */
+
+  const rowStart = range.getRow();
+  let rngRowHeight = range.getNumRows() + rowStart;
+
+  let a1RowsHeights = []
+  let sheet = range.getSheet();
+  let spread = SpreadsheetApp.getActive();
+
+  for (let i = rowStart; i < rngRowHeight; i++) {
+
+    let rowHeight = sheet.getRowHeight(i);
+    a1RowsHeights.push(rowHeight);
+
+    if (toast) {
+      if (i % 100 === 0) {
+        spread.toast('rowsHeightsGet: Строка ' + i + ' из ' + rngRowHeight);
+      }
+    }
+  }
+
+  return a1RowsHeights;
+}
+
+
+function rowsHeightsSet(a1RowsHeights, range, toast) {
+  /**
+   * SET THE ROW HEIGHTS OF A SELECTED RANGE OF A DESTINATION SHEET
+   * @param {Array.<number>} a1RowsHeights - row heights from rowsHeightsGet(rng);
+   * @param {object} range - destionation range of copied data.
+   * проставить высоты строк диапазону по массив 1мерный
+   */
+
+  const rowStart = range.getRow();
+  const rowLast_ = range.getNumRows() + rowStart;
+
+  let sheet = range.getSheet();
+  let spread = SpreadsheetApp.getActive();
+  let count = 0;
+  const a1Len = a1RowsHeights.length;
+
+  for (let row = rowStart; row < rowLast_; row++) {
+
+    if (row <= a1Len) {
+      sheet.setRowHeight(row, a1RowsHeights[count]);
+
+      if (toast) {
+        if (row % 100 === 0) {
+          spread.toast('Высоту применяю: строка ' + row + ' из ' + rowLast_);
+        }
+      }
+    }
+    count += 1;
+  }
+}
+
+function cellReplace_Test() {
+  let spread = SpreadsheetApp.getActive();
+  let sheetWithNDS = spread.getSheetByName('Прайс с НДС');
+  let cell = sheetWithNDS.getRange("E2");
+
+  cellReplace(cell, ' без ', ' с ');
+}
+
+function cellReplace(cell, what, for_) {
+  // в ячейке заменить
+
+  let value = cell.getValue();
+  value = value.toString().replace(what, for_);
+  cell.setValue(value);
+}
+
+function Array2DNumbersMultiToFixed_Test() {
+
+  let spread = SpreadsheetApp.getActive();
+
+  let sheetBezNDS_ = spread.getSheetByName('Прайс без НДС');
+  let sheetWithNDS = spread.getSheetByName('Прайс СНГ');
+
+  const a2Old = sheetBezNDS_.getRange("D8:D9").getValues();
+
+  let a2New = Array2DNumbersMultiToFixed(a2Old, 1.05, 2);
+
+  console.log('Округление', a2New);
+
+  a2New = Array2DNumbersMultiToFixed(a2Old, 1.05, 2, true);
+
+  console.log('К целому', a2New);
+
+  sheetWithNDS.getRange("D8:D9").setValues(a2New);
+
+}
+
+function Array2DNumbersMultiToFixed(a2_Old, mult, toFix, mathRound) {
+  // числа в массиве умножить на mult, если элемент число, округлить toFix знака или до ближайшего целого
+  // не числа не трогать.
+
+  // массив 2мерный копировать 
+  let a2 = JSON.parse(JSON.stringify(a2_Old));
+  let elem = '';
+
+  if (toFix === 'undefined') {
+    toFix = 0;
+  }
+
+  for (let row = 0; row < a2.length; row++) {
+    for (let col = 0; col < a2[0].length; col++) {
+
+      elem = convert2FloatCommaPointIfPossible(a2[row][col]);
+
+      if (isNumeric(elem)) { // с округлением
+
+        elem *= mult;
+
+        if (mathRound) {
+          a2[row][col] = Math.round(elem);
+        } else {
+          a2[row][col] = parseFloat(elem.toFixed(toFix));
+        }
+      }
+    }
+  }
+  return a2;
+}
+
+function numericIfMulti_Test() {
+  console.log(numericIfMulti(2, 1.2));
+  console.log(numericIfMulti('z', 1.2));
+}
+function numericIfMulti(value, mult) {
+  // если число, умножить, иначе вернуть
+  // if (isNumeric(value)) {
+  //   return value * mult;
+  // }
+  // return value;
+  return isNumeric(value) ? value * mult : value;
+}
+
+function a2NumbersReplaceByMap(ar2DPrices, col, dictiNames, repl) {
+  // если в ячейке значение из словаря
+  // заменить в строке числа на значение
+
+  let value = '';
+
+  for (let row = 0; row < ar2DPrices.length; row++) {
+
+    value = ar2DPrices[row][col];
+
+    if (dictiNames.has(value)) {
+
+      a2RowNumbersReplace(ar2DPrices, row, repl);
+
+    }
+  }
+}
+
+function a2RowNumbersReplace_Test() {
+
+  let a2 = [["", "1,", "1 z", "1,1 "]];
+  let re = 'Дог';
+
+  a2RowNumbersReplace(a2, 0, re);
+
+  if (a2[0][3] === re) {
+    console.log(a2[0][3], 'a2RowNumbersReplace_Test OK');
+  } else {
+    console.log(a2[0][3], 'a2RowNumbersReplace_Test Error');
+  }
+  if (a2[0][2] !== re) {
+    console.log(a2[0][2], 'a2RowNumbersReplace_Test OK');
+  } else {
+    console.log(a2[0][2], 'a2RowNumbersReplace_Test Error');
+  }
+}
+
+function a2RowNumbersReplace(a2, row, value) {
+  // массив 2мерный в строке заменить числа на value
+
+  let number = '';
+
+  for (col = 0; col < a2[0].length; col++) {
+
+    number = a2[row][col];
+
+    if (isNumeric(number)) {
+
+      a2[row][col] = value;
+
+    }
+  }
+}
+
+
+function spreadsheetCopy() {
+  let spreadsheet = SpreadsheetApp.getActive();
+  let dateYYYMMDD = formatDate(new Date());
+  spreadsheet.copy(spreadsheet.getName() + ' Копия ' + dateYYYMMDD);
+}
+
+function formatDate_Test() {
+  console.log(formatDate(new Date()));
+}
+
+function formatDate(date) {
+  // форматировать дату гггг-мм-дд
+  
+  return new Date(date).toLocaleString('ru', {
+    day: '2-digit',
+    month: '2-digit',
+    year: '2-digit'
+  });
 }

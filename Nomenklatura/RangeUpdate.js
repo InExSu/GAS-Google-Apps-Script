@@ -149,8 +149,11 @@ function Range_Update_by_Heads(rng_Old, column_Key_Old, rng_New, column_Key_New,
   // Обновить диапазон по совпадению в ключевых столбцах с учётом наименований столбцов
   // диапазоны в массивы
 
-  let a2d_Old = range_2_ArrayValuesFormulas(rng_Old) //2022-02-17 rng_Old.getValues();
-  let a2d_New = range_2_ArrayValuesFormulas(rng_New);
+  // let a2d_Old = range_2_ArrayValuesFormulas(rng_Old) //2022-02-17 rng_Old.getValues();
+  // let a2d_New = range_2_ArrayValuesFormulas(rng_New);
+
+  let a2d_Old = rng_Old.getValues(); // 2022-04-29
+  let a2d_New = rng_New.getValues();
 
   let map_Sea = Array2D_Column_2_Map(a2d_New, column_Key_New);
 

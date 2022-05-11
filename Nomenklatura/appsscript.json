@@ -56,6 +56,12 @@
     }, {
       "menuName": "CTRLShiftDown",
       "functionName": "CTRLShiftDown"
+    }, {
+      "menuName": "FileSave",
+      "functionName": "FileSave"
+    }, {
+      "menuName": "FileEmail",
+      "functionName": "FileEmail"
     }]
   }
 }

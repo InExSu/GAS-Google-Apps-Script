@@ -40,6 +40,8 @@ function onOpen() {
     .addItem('Обрамить', 'formulaCodeFind')
 
     .addItem('Дубликаты', 'selectionDuplicates')
+    
+    .addItem('Создать копию книги', 'spreadsheetCopy')
 
     // .addItem('Нули формат', 'selectionNullFormatted')
 

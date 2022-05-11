@@ -1,11 +1,5 @@
 function rangePriceColumnUpade() {
-  // Переделка прайса
-  // из формул с кодом разово сделать копию с артикулами.
-  // На листе будут три таблицы:
-  // слева    версия для печати - цены вбиваются пользователями.
-  // в центре версия с артикулами.
-  // По этим  версиям, скрипт обновления цен в листе "сводная таблица"
-  // создаст справа отчёт работы в третью таблицу.
+  // обновить сводная таблица из Прайс без НДС
 
   const spread = SpreadsheetApp.getActive();
 
@@ -23,8 +17,8 @@ function rangePriceColumnUpade() {
 
   } else {
 
-    const a2_Price_bez_NDS_Prices_LQ = sheet_Price_bez_NDS.getRange('L:Q').getValues();
-    const a2_Price_bez_NDS_Artics_CH = sheet_Price_bez_NDS.getRange('C:H').getValues();
+    const a2_Price_bez_NDS_Prices_CH = sheet_Price_bez_NDS.getRange('C:H').getValues();
+    const a2_Price_bez_NDS_Artics_LQ = sheet_Price_bez_NDS.getRange('L:Q').getValues();
 
     const a2_Svodnaya_Artics_B = sheet_Svodnaya.getRange('B:B').getValues();
     const map_Artics_Svodnaya_B = Array2D_2_Map(a2_Svodnaya_Artics_B);
@@ -32,27 +26,29 @@ function rangePriceColumnUpade() {
     const range_Svodnaya_J = sheet_Svodnaya.getRange('J:J');
     let a2_Column_Prices_J = range_Svodnaya_J.getValues();
 
-    // копировать массив 2мерный 
+    // массив 2мерный копировать 
     let a2_Column_Prices_Old = JSON.parse(JSON.stringify(a2_Column_Prices_J))
 
-    a2PriceColumnUpdate(a2_Price_bez_NDS_Prices_LQ, a2_Price_bez_NDS_Artics_CH, map_Artics_Svodnaya_B, a2_Column_Prices_J);
+    a2PriceColumnUpdate(a2_Price_bez_NDS_Artics_LQ, a2_Price_bez_NDS_Prices_CH, map_Artics_Svodnaya_B, a2_Column_Prices_J);
 
     // В "Прайс без НДС" для разных ростов указан один артикул.
     // нужно по этому артикулу установить туже цену для других ростов
     const a2_Svodnya_BD = sheet_Svodnaya.getRange('B:D').getValues();
-    priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
+    priceGrowths(a2_Price_bez_NDS_Artics_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
+
+    // проставить цены по массиву артикулов соответствия 2022-04-13
+    artiCoolsPriceOne(a2_Svodnaya_Artics_B, a2_Column_Prices_J, a2Artics4One());
 
     range_Svodnaya_J.setValues(a2_Column_Prices_J);
 
     rangePriceColumnUpade_Log(sheet_Logg, a2_Svodnaya_Artics_B, a2_Column_Prices_Old, a2_Column_Prices_J);
 
     sheet_Logg.activate();
-
   }
 }
 
 function priceGrowths_Test() {
-  let a2_Price_bez_NDS_Prices_LQ = [['0', '1', '2', '3', '4', 'z', 'артик1']];
+  let a2_Price_bez_NDS_Artics_LQ = [['0', '1', '2', '3', '4', 'z', 'артик1']];
   let a2_Svodnya_BD = [
     ['0', '1', '2'],
     ['артик1', '', 'артик1 назв рост 1'],
@@ -64,14 +60,14 @@ function priceGrowths_Test() {
     [9],
     [3]];
 
-  priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
+  priceGrowths(a2_Price_bez_NDS_Artics_LQ, a2_Svodnya_BD, a2_Column_Prices_J);
 
   console_log(a2_Column_Prices_J);
 
 }
 
-function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Prices_J) {
-  // Проходом по диапазону артикулов листа a2_Price_bez_NDS_Prices_LQ ,
+function priceGrowths(a2_Price_bez_NDS_Artics_LQ, a2_Svodnya_BD, a2_Column_Prices_J) {
+  // Проходом по диапазону артикулов листа a2_Price_bez_NDS_Artics_LQ ,
   // найти артикул в массиве a2_Svodnya_BD,
   // взять номер строки a2_Svodnya_BD,
   // взять наименование
@@ -89,10 +85,10 @@ function priceGrowths(a2_Price_bez_NDS_Prices_LQ, a2_Svodnya_BD, a2_Column_Price
   let nameCut = '';
   const COL_2 = 2;
 
-  for (let row = 0; row < a2_Price_bez_NDS_Prices_LQ.length; row++) {
-    for (let col = 0; col < a2_Price_bez_NDS_Prices_LQ[0].length; col++) {
+  for (let row = 0; row < a2_Price_bez_NDS_Artics_LQ.length; row++) {
+    for (let col = 0; col < a2_Price_bez_NDS_Artics_LQ[0].length; col++) {
 
-      artic = a2_Price_bez_NDS_Prices_LQ[row][col];
+      artic = a2_Price_bez_NDS_Artics_LQ[row][col];
 
       if (map_Artics_Row.has(artic)) {
 
@@ -242,7 +238,6 @@ function a2PriceColumnUpdate(a2_Arti_Range, a2_Price_Range, map_Arti, a2_Price_C
           let row_Price = map_Arti.get(artic);
           let price = a2_Price_Range[row][col];
 
-          let stop = 'да';
           a2_Price_Colum[row_Price][0] = convert2FloatCommaPointIfPossible(price);
         }
       }
@@ -495,17 +490,587 @@ function array2d2Range(cell, a2d) {
   sheet_ob.getRange(row_numb, col_numb, a2d.length, a2d[0].length).setValues(a2d);
 }
 
-// function LoopNO() {
-//   var names = ["Jack", "Jecci", "Ram", "Tom"];
-//   var upperCaseNames = [];
-//   // for (let i = 0, totalNames = names.length; i < totalNames; i = i + 1) {
-//   //   upperCaseNames[i] = names[i].toUpperCase();
-//   // }
+function artiCoolsCheck() {
+  // проверить артикулы листа "Прайс без НДС" в листе "сводная таблица"
 
-//   upperCaseNames = names.map(x => x.toUpperCase());
+  const sheetPivot = SpreadsheetApp.getActive().getSheetByName('сводная таблица');
+  const sheetPrice = SpreadsheetApp.getActive().getSheetByName('Прайс без НДС');
+  const rangeArticPivot = sheetPivot.getRange("B:B");
+  const rangeArticPrice = sheetPrice.getRange("L:Q");
+  const a2Pivot = rangeArticPivot.getValues();
+  const a2Price = rangeArticPrice.getValues();
 
-// }
+  let artics = '';
+  let value = ''
+  const a2Map = Array2D_Column_2_Map(a2Pivot, 0);
 
-// nameGrowths_Test();
-// A2s_Match_Test();
-// priceGrowths_Test();
+  for (let row = 0; row < a2Price.length; row++) {
+    for (let col = 0; col < a2Price[0].length; col++) {
+
+      value = a2Price[row][col];
+
+      if (/\d{3}-\d{3}-\d{4}/.test(value)) {
+
+        if (a2Map.has(value) == false) {
+
+          artics += value + "; ";
+
+        }
+      }
+    }
+  }
+  if (artics.length === 0) {
+    Browser.msgBox("Артикулы все найдены");
+    console.log("Артикулы все найдены")
+  } else {
+    Browser.msgBox("Отсутствуют в 'сводная таблица:\n" + artics);
+    console.log("Отсутствуют в 'сводная таблица:\n" + artics);
+  }
+}
+
+function artiCoolsPriceOne_Test() {
+
+  const a2ColumnArtics = [['102-052-0025'], ['102-052-0022']];
+  let a2ColumnPrices = [[25], [22]];
+  let a2Artics = a2Artics4One();
+
+  artiCoolsPriceOne(a2ColumnArtics, a2ColumnPrices, a2Artics);
+
+  if (a2ColumnPrices[1][0] == 25) {
+    console.log('artiCoolsPriceOne_Test OK!', a2ColumnPrices);
+  } else {
+    console.log('artiCoolsPriceOne_Test ОШИБКА! ожидалось 25, получил ' + a2ColumnPrices[1][0]);
+  }
+}
+
+function artiCoolsPriceOne(a2ColumnArtics, a2ColumnPrices, a2Artics) {
+  // проходом по столбцу 0 артикулов цен одинаковых a2Artics
+  // найти артикул в столбце артикулов, взять номер строки
+  // взять цену из строки массива цен по номеру строки
+  // проходом по вложенному массиву по столбцу артикулов
+  // проставить цену в столбец цен
+
+  let artic = '';
+  let a1Art = [];
+  let price = 0;
+  let rowA = 0;
+  let mapArtics = Array2D_2_Map(a2ColumnArtics);
+
+  for (let row = 0; row < a2Artics.length; row++) {
+
+    artic = a2Artics[row][0];
+
+    if (mapArtics.has(artic)) {
+
+      a1Art = a2Artics[row];
+
+      if (typeof a1Art === 'object') {
+
+        rowA = mapArtics.get(artic);
+        price = a2ColumnPrices[rowA][0];
+        // основное действие
+        price2Artics(mapArtics, a2ColumnPrices, a1Art, price);
+
+      } else {
+        console.log('artiCoolsPriceOne:', 'a1Art !== object');
+      }
+
+    } else {
+      console.log('artiCoolsPriceOne:', artic, 'НЕ найден в mapArtics');
+    }
+  }
+}
+
+function price2Artics_Test() {
+  const a2Artics = [['1-1'], ['2-2']];
+  const mapArtics = Array2D_2_Map(a2Artics);
+  let a2ColumnPrices = [[11], [22]];;
+  const a1Art = ['3-3', '2-2'];
+  const price = 1;
+  price2Artics(mapArtics, a2ColumnPrices, a1Art, price);
+  if (a2ColumnPrices[1][0] !== price) {
+    console.log('price2Artics_Test, ошибка ожидалось 1, получил' + a2ColumnPrices[1][0]);
+  } else {
+    console.log('price2Artics_Test Ok!');
+  }
+}
+function price2Artics(mapArtics, a2ColumnPrices, a1Art, price) {
+  // расставить артикулам цены
+
+  let artic = '';
+  let row = -1;
+
+  for (let index = 0; index < a1Art.length; index++) {
+
+    artic = a1Art[index];
+
+    if (mapArtics.has(artic)) {
+
+      row = mapArtics.get(artic);
+
+      a2ColumnPrices[row][0] = price;
+
+    } else {
+      console.log('price2Artics: mapArtics.has(', artic, ') = false');
+    }
+  }
+}
+
+
+function a2Artics4One() {
+  // вернуть массив артикулов одинаковых цен
+  return [
+    ['102-142-0008', '102-142-0005'],
+    ['102-142-0009', '102-142-0006', '102-142-0010'],
+    ['102-052-0020', '102-052-0021'],
+    ['102-142-0001', '102-142-0002'],
+    ['102-052-0025', '102-052-0022'],
+    ['102-011-0017', '102-011-0056'],
+    ['102-011-0012', '102-011-0079'],
+    ['101-011-0003', '101-011-0004'],
+    ['101-011-0005', '101-011-0006'],
+    ['101-011-0007', '101-011-0008'],
+    ['102-044-0001', '102-044-0002'],
+    ['102-044-0003', '102-044-0004'],
+    ['102-044-0005', '102-044-0006'],
+    ['102-044-0007', '102-044-0008'],
+    ['102-044-0009', '102-044-0010'],
+    ['102-044-0011', '102-044-0012'],
+    ['102-044-0013', '102-044-0014'],
+    ['102-044-0015', '102-044-0016'],
+    ['102-044-0017', '102-044-0018'],
+    ['102-024-0003', '102-024-0004', '102-024-0005'],
+    ['102-025-0001', '102-025-0002', '102-025-0003'],
+    ['102-025-0004', '102-025-0005', '102-025-0006'],
+    ['102-025-0007', '102-025-0008', '102-025-0009'],
+    ['302-122-0001', '302-122-0002', '302-122-0003', '302-122-0004', '302-122-0005'],
+    ['302-122-0006', '302-122-0007', '302-122-0008', '302-122-0009'],
+    ['302-122-0010', '302-122-0011', '302-122-0012', '302-122-0013'],
+    ['302-123-0003', '302-123-0004', '302-123-0005', '302-123-0006', '302-123-0007'],
+    ['302-123-0008', '302-123-0009'],
+    ['202-007-0001', '202-007-0002', '202-007-0003', '202-007-0004', '202-007-0005', '202-007-0006']
+  ];
+}
+
+function pricesAllUpdate_Test() {
+  // так как при обновлении происходит сначала очистка, то
+  // можно следить за значениями ячеек
+
+  let spread = SpreadsheetApp.getActive();
+
+  let cellD8BezNDS = spread.getSheetByName('Прайс без НДС').getRange("D8").getValue();
+  cellD8BezNDS = convert2FloatCommaPointIfPossible(cellD8BezNDS);
+
+  pricesAllUpdate();
+
+  let cellD8WthNDS_ = spread.getSheetByName('Прайс с НДС').getRange("D8").getValue();
+  pricesAllUpdateCells_Console(cellD8BezNDS, cellD8WthNDS_, 'cellD8WthNDS_', 1.2);
+
+  let cellD8ParBNDS = spread.getSheetByName('Прайс партнеры без НДС').getRange("D8").getValue();
+  pricesAllUpdateCells_Console(cellD8BezNDS, cellD8ParBNDS, 'cellD8ParBNDS', 1.00);
+
+  let cellD8ParWNDS = spread.getSheetByName('Прайс партнеры c НДС').getRange("D8").getValue();
+  pricesAllUpdateCells_Console(cellD8BezNDS, cellD8ParWNDS, 'cellD8ParWNDS', 1.2);
+
+  let cellD8SNGPric = spread.getSheetByName('Прайс СНГ').getRange("D8").getValue();
+  let mult = spread.getSheetByName('ПрайсыНастройки').getRange('SNG_Multi').getValue();
+  mult = mult.toString().replace(',', '.');
+  pricesAllUpdateCells_Console(cellD8BezNDS, cellD8SNGPric, 'cellD8SNGPric', mult);
+
+  let cellD8SNGPart = spread.getSheetByName('Прайс СНГ партнеры').getRange("D8").getValue();
+  pricesAllUpdateCells_Console(cellD8BezNDS, cellD8SNGPart, 'cellD8SNGPart', mult);
+
+}
+
+function pricesAllUpdateCells_Console_Test() {
+  pricesAllUpdateCells_Console('лев', 10, "12", 1.2);
+}
+
+function pricesAllUpdateCells_Console(leftValue, rightValue, rightName, multi) {
+
+  let res = 'OK';
+  let sym = '=='
+
+  console.log(parseFloat(leftValue * multi).toFixed(2), rightValue)
+  console.log(typeof parseFloat(leftValue * multi).toFixed(2), typeof rightValue)
+
+  if (rightName.indexOf('SNG') > 0) {
+    if (Math.round(leftValue * multi) != rightValue) {
+      res = 'Error';
+      sym = '!==';
+    }
+  } else {
+    if (parseFloat(leftValue * multi).toFixed(2) != rightValue) {
+      res = 'Error';
+      sym = '!==';
+    }
+  }
+
+  if (res === 'Error') {
+    console.log(
+      `pricesAllUpdate_Test ${rightName} ${res}: ` +
+      `${leftValue} * ${multi} ${sym} ${rightValue}`);
+  } else {
+    console.log('pricesAllUpdate_Test OK');
+  }
+}
+
+function pricesAllUpdate() {
+  // прайсы ВСЕ обновить из "Прайс без НДС"
+
+  let spread = SpreadsheetApp.getActive();
+  let sheetBezNDS_ = spread.getSheetByName('Прайс без НДС');
+
+  spread.toast('Собираю высоты строк ... Несколько минут ...');
+  let a1RowsHeights = rowsHeightsGet(sheetBezNDS_.getRange("A:A"), true);
+
+  spread.toast('Обновляю Прайс с НДС ...');
+  priceSNDSUpdate(a1RowsHeights);
+
+  spread.toast('Обновляю Прайс партнеры без НДС ...');
+  priceUpdateDogovornaya(a1RowsHeights, 'Прайс без НДС', 'Прайс партнеры без НДС');
+
+  spread.toast('Обновляю Прайс партнеры с НДС ...');
+  pricePartnersSNDSUpdate(a1RowsHeights);
+
+  spread.toast('Обновляю Прайс СНГ ...');
+  priceSNGUpdate(a1RowsHeights);
+
+  spread.toast('Обновляю Прайс СНГ партнеры ...');
+  priceUpdateDogovornaya(a1RowsHeights, 'Прайс СНГ', 'Прайс СНГ партнеры');
+
+  spread.toast('Цены обновлены.');
+
+}
+
+function priceUpdateDogovornaya_Test() {
+  // priceUpdateDogovornaya([], 'Прайс без НДС', 'Прайс партнеры без НДС');
+  priceUpdateDogovornaya([48], 'Прайс СНГ', 'Прайс СНГ партнеры');
+}
+
+function priceUpdateDogovornaya(a1RowsHeights, sheet_Sour_Name, sheet_Dest_Name) {
+  // Прайс обновить и заменить числа в некоторых строках.
+
+  let spread = SpreadsheetApp.getActive();
+
+  let sheet_Sour = spread.getSheetByName(sheet_Sour_Name);
+  let sheet_Dest = spread.getSheetByName(sheet_Dest_Name);
+
+  let range = sheet_Dest.getDataRange();
+  range.clear();
+
+  sheet_Sour.getRange("A:I").copyTo(sheet_Dest.getRange("A1"), SpreadsheetApp.CopyPasteType.PASTE_NORMAL,
+    false);
+  sheet_Sour.getRange("A:I").copyTo(sheet_Dest.getRange("A1"), SpreadsheetApp.CopyPasteType.PASTE_COLUMN_WIDTHS,
+    false);
+
+  if (typeof a1RowsHeights === 'undefined') {
+    spread.toast(sheet_Sour.getName() + ' собираю высоты строк ... несколько минут ...');
+    a1RowsHeights = rowsHeightsGet(sheet_Sour.getRange("A:I"), true);
+  }
+
+  spread.toast('Строки высоту ставлю, лист: ' + sheet_Dest.getName());
+  rowsHeightsSet(a1RowsHeights, sheet_Dest.getRange("A:I"), true);
+
+  let sheetSetting = spread.getSheetByName('ПрайсыНастройки');
+  let rangeSetting = sheetSetting.getRange("A:A");
+  let rangePartner = sheet_Dest.getRange("B:I");
+
+  // spread.toast('Цены заменяю, лист: ' + rangePartner.getSheet().getName());
+  rangeReplacebyMap(rangePartner, rangeSetting);
+
+  // Обработка специальных случаев
+  // spread.toast('Замена специальная, лист: ' + rangePartner.getSheet().getName());
+  priceNumber2DogovorSpecial(rangePartner);
+}
+
+
+function priceNumber2DogovorSpecial_Test() {
+
+  let spread = SpreadsheetApp.getActive();
+  let sheetPartner = spread.getSheetByName('ПрайсПартнёрыБезНДСТест');
+  sheetPartner.getRange("F399").setValue(123);
+  // sheetPartner.getRange("H434").setValue(123);
+  // sheetPartner.getRange("H435").setValue(123);
+  let rangePartner = sheetPartner.getRange("B:I")
+
+  priceNumber2DogovorSpecial(rangePartner);
+
+  if (sheetPartner.getRange("F399").getValue() === "Договорная") {
+    console.log('priceNumber2DogovorSpecial OK');
+  } else {
+    console.log('priceNumber2DogovorSpecial Error!');
+  }
+}
+
+function priceNumber2DogovorSpecial(rangePrice) {
+  // Дополнительный патрон ДПГ-3 производства АРТИ и заменить на "Договорная"
+  // ПДУ-5 одну цену заменить на "Договорная";
+
+  let a2 = rangePrice.getValues();
+
+  for (row = 0; row < a2.length; row++) {
+
+    if (a2[row][0].indexOf('Дополнительный патрон ДПГ-3 ') > -1) {
+      if (a2[row][7] === 'АРТИ') {
+        a2[row][6] = "Договорная";
+      }
+    }
+    if (a2[row][0] === 'ПДУ-5') {
+      a2[row][4] = 'Договорная';
+    }
+  }
+  rangePrice.setValues(a2);
+}
+
+function rangeReplacebyMap_Test() {
+  let spread = SpreadsheetApp.getActive();
+  let sheetPartner = spread.getSheetByName('ПрайсПартнёрыБезНДСТест');
+  let sheetSetting = spread.getSheetByName('ПрайсыНастройки');
+  sheetPartner.getRange("D16").setValue(123);
+  let rangePrice = sheetPartner.getRange("B:I")
+  let rangeSetti = sheetSetting.getRange("A:A");
+
+  rangeReplacebyMap(rangePrice, rangeSetti);
+
+  if (sheetPartner.getRange("D16").getValue() === "Договорная") {
+    console.log('priceNumber2DogovorSpecial OK');
+  } else {
+    console.log('priceNumber2DogovorSpecial Error!');
+  }
+}
+
+function rangeReplacebyMap(rangePrice, rangeSetti) {
+  // на листе заменить некоторые цены по названию
+
+  let ar2DPrices = rangePrice.getValues();
+  let ar2DNames_ = rangeSetti.getValues();
+  let dictiNames = Array2D_Column_2_Map(ar2DNames_, 0);
+
+  a2NumbersReplaceByMap(ar2DPrices, 0, dictiNames, "Договорная");
+
+  rangePrice.setValues(ar2DPrices);
+
+}
+
+
+function priceSNDSUpdate_Test() {
+
+  let spread = SpreadsheetApp.getActive();
+
+  let sheetBezNDS_ = spread.getSheetByName('Прайс без НДС');
+
+  spread.toast(sheetBezNDS_.getName() + ' собираю высоты строк ... несколько минут ...');
+  let a1RowsHeights = rowsHeightsGet(sheetBezNDS_.getRange("A:A"), true);
+
+  priceSNDSUpdate([]);
+
+
+}
+
+function priceSNDSUpdate(a1RowsHeights) {
+  // Прайс "Прайс с НДС" данные обновить из "Прайс без НДС"
+
+  let spread = SpreadsheetApp.getActive();
+
+  let sheetBezNDS_ = spread.getSheetByName('Прайс без НДС');
+  let sheetWithNDS = spread.getSheetByName('Прайс с НДС');
+
+  if (typeof a1RowsHeights === 'undefined') {
+    spread.toast(sheetBezNDS_.getName() + ' собираю высоты строк ... несколько минут ...');
+    a1RowsHeights = rowsHeightsGet(sheetBezNDS_.getRange("A:A"), true);
+  }
+
+  rangePriceUpdateMulti(sheetBezNDS_, sheetWithNDS, a1RowsHeights, 1.2, 2);
+
+}
+
+
+function pricePartnersSNDSUpdate(a1RowsHeights) {
+  // Прайс "Прайс с НДС" данные обновить из "Прайс без НДС"
+
+  let spread = SpreadsheetApp.getActive();
+
+  let sheetBezNDS_ = spread.getSheetByName('Прайс партнеры без НДС');
+  let sheetWithNDS = spread.getSheetByName('Прайс партнеры c НДС');
+
+  if (typeof a1RowsHeights === 'undefined') {
+    spread.toast(sheetBezNDS_.getName() + ' собираю высоты строк ... несколько минут ...');
+    a1RowsHeights = rowsHeightsGet(sheetBezNDS_.getRange("A:I"), true);
+  }
+
+  rangePriceUpdateMulti(sheetBezNDS_, sheetWithNDS, a1RowsHeights, 1.2, 2, false);
+
+}
+
+
+function rangePriceUpdateMulti(sheetBezNDS_, sheetWithNDS, a1RowsHeights, multiplier, toFix, mathRound) {
+  // Универсальный обновитель прайсов
+  // "с НДС" из "Прайс без НДС"
+  // взять данные и числа умножить на multiplier
+  // или MathRound
+
+  if (multiplier === 'undefined') {
+    Browser.msgBox('multiplier === undefined, будет 1');
+    multiplier = 1;
+  }
+
+  if (toFix === 'undefined') {
+    toFix = 2;
+  }
+
+  let range = sheetWithNDS.getDataRange();
+  range.clear();
+
+  sheetBezNDS_.getRange("A:I").copyTo(sheetWithNDS.getRange("A:I"), SpreadsheetApp.CopyPasteType.PASTE_NORMAL,
+    false);
+  sheetBezNDS_.getRange("A:I").copyTo(sheetWithNDS.getRange("A:I"), SpreadsheetApp.CopyPasteType.PASTE_COLUMN_WIDTHS,
+    false);
+
+  rowsHeightsSet(a1RowsHeights, sheetWithNDS.getRange("A:I"), true);
+
+  range = sheetWithNDS.getRange("C:H");
+  let a2Price = range.getValues();
+
+  a2Price = Array2DNumbersMultiToFixed(a2Price, multiplier, toFix, mathRound);
+
+  range.setValues(a2Price);
+
+  let cell = sheetWithNDS.getRange("E2");
+  cellReplace(cell, ' без ', ' с ');
+
+}
+
+function priceSNGUpdate_Test() {
+
+  let spread = SpreadsheetApp.getActive();
+
+  let sheetBezNDS_ = spread.getSheetByName('Прайс без НДС');
+
+  spread.toast(sheetBezNDS_.getName() + ' собираю высоты строк ... несколько минут ...');
+  let a1RowsHeights = rowsHeightsGet(sheetBezNDS_.getRange("A:A"), true);
+
+  priceSNGUpdate([]);
+
+}
+
+function priceSNGUpdate(a1RowsHeights) {
+  // Прайс "Прайс СНГ" обновить из "Прайс без НДС"
+
+  let spread = SpreadsheetApp.getActive();
+
+  let sheetBezNDS_ = spread.getSheetByName('Прайс без НДС');
+  let sheetSNG = spread.getSheetByName('Прайс СНГ');
+
+  let mult = spread.getSheetByName('ПрайсыНастройки').getRange('SNG_Multi').getValue();
+  mult = mult.toString().replace(',', '.');
+
+  if (typeof a1RowsHeights === 'undefined') {
+    spread.toast(sheetBezNDS_.getName() + ' собираю высоты строк ... несколько минут ...');
+    a1RowsHeights = rowsHeightsGet(sheetBezNDS_.getRange("A:I"), true);
+  }
+
+  rangePriceUpdateMulti(sheetBezNDS_, sheetSNG, a1RowsHeights, mult, true, true);
+}
+
+function priceUpdateFromPivot_RUN() {
+  const spread = SpreadsheetApp.getActive();
+  const sheet_Pivot = spread.getSheetByName('сводная таблица');
+  const sheet_Price = spread.getSheetByName('Прайс без НДС');
+  priceUpdateFromPivot(sheet_Pivot, sheet_Price);
+}
+
+function priceUpdateFromPivot(sheet_Pivot, sheet_Price) {
+  // 2022-04-29
+  // обновить "Прайс без НДС" из "сводная таблица"
+
+  // Лист "сводная таблица" столбцы Артикул, Цена в массивы a2PivotArtic, a2PivotPrice
+  // Лист "Прайс без НДС" столбцы Артикулы, Цены в массивы a2PriceArtics, a2PricePrices
+
+  // Массивы a2PriceArtics, a2PricePrices должны быть одинаковой размерности.
+
+  // Массив a2PriceArtics в словарь mapPriceArticRowCol: ключ - артикул, значение {строка, столбец}
+
+  // Проходом по a2PivotArtic
+  // 	Если артикул в mapPriceArticRowCol
+  // 		взять цену из a2PivotPrice
+  // 		взять строку, столбец из mapPriceArticRowCol
+  // 		поставить цену в a2PricePrices[row][col]
+  // 		записать в лог
+
+  // лог на лист
+  // a2PricePrices на лист "Прайс без НДС"
+
+  const spread = SpreadsheetApp.getActive();
+
+  if (typeof(sheet_Pivot) === 'undefined') {
+    sheet_Pivot = spread.getSheetByName('сводная таблица (копия)');
+  }
+  if (typeof(sheet_Price) === 'undefined') {
+    sheet_Price = spread.getSheetByName('Прайс без НДС (копия)');
+  }
+
+  const sheet_Log_2 = spread.getSheetByName('Log_02');
+
+  const a2PivotArtic = sheet_Pivot.getRange('B:B').getValues();
+  let a2PivotPrice = sheet_Pivot.getRange('J:J').getValues();
+
+  const a2PriceArtics = sheet_Price.getRange('L:Q').getValues();
+  const a2PricePrices = sheet_Price.getRange('C:H').getValues();
+
+  const mapPriceArticRowCol = Array2D_Row_Column_2_Map(a2PriceArtics, /\d{3}-\d{3}-\d{4}/);
+  let a2Log = [];
+
+  const a2PriceNew = forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticRowCol, a2Log, 'сводная таблица')
+
+  // запиши в лог
+
+  // sheet_Pivot.getRange('J:J').setValues(a2PriceNew);
+
+}
+
+function forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticRowCol, a2Log, sheetName4Log) {
+  // 2022-04-29
+  // Проходом по a2PivotArtic
+  // 	Если артикул в mapPriceArticRowCol
+  // 		взять цену из a2PivotPrice
+  // 		взять строку, столбец из mapPriceArticRowCol
+  // 		поставить цену в a2PricePrices[row][col]
+  // 		записать в массив лог
+
+}
+
+function Array2D_Row_Column_2_Map_Test() {
+  // 2022-04-29
+  const spread = SpreadsheetApp.getActive();
+  const sheet_Price = spread.getSheetByName('Прайс без НДС (копия)');
+  const a2 = sheet_Price.getRange('O8:P9').getValues();
+
+  const reg = /\d{3}-\d{3}-\d{4}/
+
+  const mapArtic = Array2D_Row_Column_2_Map(a2, reg);
+}
+
+function Array2D_Row_Column_2_Map(array2d, regexp) {
+  // 2022-04-29
+  // из массива 2мерного вернуть словарь - массив ассоциативный: 
+  // ключ - значение по регулярному, значение -  номер строки и номер столбца
+
+  let map_return = new Map();
+  let val = '';
+
+  for (let row = 0; row < array2d.length; row++) {
+    for (let col = 0; col < array2d[row].length; col++) {
+
+      val = String(array2d[row][col]);
+
+      if (regexp.test(val)) {
+        // если ключ повторяется, то обновится значение
+        map_return.set(val, [row, col]);
+      }
+    }
+  }
+  return map_return;
+}
+
+
