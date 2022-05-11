@@ -1394,3 +1394,13 @@ function columnNumber2Letter(column) {
   }
   return letter;
 }
+
+function a12map(a1) {
+  // массив одномерный в ассоциативный
+
+  const arr = new Map();
+  for (let indx = 0; indx < a1.length; indx++) {
+    arr.set(a1[indx], indx);
+  }
+  return arr;
+}
