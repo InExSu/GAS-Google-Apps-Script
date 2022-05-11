@@ -439,7 +439,6 @@ function array2d2Range_Test() {
 }
 
 function array2d2Range(cell, a2d) {
-
   // массив 2мерный вставить на лист
 
   let sheet_id = cell.getGridId();
@@ -1376,10 +1375,22 @@ function formatDate_Test() {
 
 function formatDate(date) {
   // форматировать дату гггг-мм-дд
-  
+
   return new Date(date).toLocaleString('ru', {
     day: '2-digit',
     month: '2-digit',
     year: '2-digit'
   });
+}
+
+function columnNumber2Letter(column) {
+  // номер столбца в букву
+
+  let tempor, letter = '';
+  while (column > 0) {
+    tempor = (column - 1) % 26;
+    letter = String.fromCharCode(tempor + 65) + letter;
+    column = (column - tempor - 1) / 26;
+  }
+  return letter;
 }
