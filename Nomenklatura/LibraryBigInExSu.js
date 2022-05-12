@@ -1404,3 +1404,235 @@ function a12map(a1) {
   }
   return arr;
 }
+
+function rangeColumnsUnionSheets_RUN() {
+  // добавить данные в столбцы вниз по названиям
+  // сначала добавь импортированные компании на лист 'Данные из Битрикс24' - и
+
+  const spread = SpreadsheetApp.getActive();
+  const sheetDest = spread.getSheetByName('Битрикс24 Компании 02');
+  const sheetSour = spread.getSheetByName('Данные из Битрикс24');
+  let numColumns = sheetDest.getDataRange().getNumColumns();
+  const destRangeHeads = sheetDest.getRange(1, 1, 1, numColumns);
+  numColumns = sheetSour.getDataRange().getNumColumns();
+  const sourRangeHeads = sheetSour.getRange(1, 1, 1, numColumns);
+
+  rangeAddColumnsByHead(sourRangeHeads, destRangeHeads);
+
+}
+
+function rangeAddColumnsByHead(sourRangeHeads, destRangeHeads) {
+  // диапазон начинается с 1,1
+
+  const sheetDest = destRangeHeads.getSheet();
+  const sheetSour = sourRangeHeads.getSheet();
+  const destA2Heads = destRangeHeads.getValues();
+  const destA1Heads = destA2Heads[0];
+  const sourA2Heads = sourRangeHeads.getValues();
+  const sourA1Heads = sourA2Heads[0];
+  const sourMapHead = a12map(sourA1Heads);
+  // диапазон одной строки будет одномерным массивом с одномерным массивом
+  // [ [ 'Тип компании',
+  //     'Кол-во сотрудников',
+  //     'Рабочий телефон',
+  //     'Рабочий e-mail' ] ]
+
+  let destElem = '';
+  let destColu = -1;
+  let sourColu = -1;
+  let a2 = [];
+  let letter = '';
+  let addres = '';
+  let sourRowMax = sheetSour.getDataRange().getNumRows();
+  let destRowStart = sheetDest.getDataRange().getNumRows() + 1;
+
+  for (let col = 0; col < destA1Heads.length; col++) {
+
+    destElem = destA1Heads[col];
+
+    if (sourMapHead.has(destElem)) {
+      // вставляю столбец
+
+      sourColu = sourMapHead.get(destElem) + 1;
+      destColu = col + 1;
+
+      letter = columnNumber2Letter(sourColu);
+      addres = letter + '2:' + letter + sourRowMax;
+      a2 = sheetSour.getRange(addres).getValues();
+      // действие основное
+      sheetDest.getRange(destRowStart, destColu, a2.length, 1).setValues(a2);
+    }
+  }
+  // добавить дату добавления
+  dateAdd(sheetDest, destRowStart);
+
+}
+
+function dateAdd_Test() {
+  const spread = SpreadsheetApp.getActive();
+  const sheet_ = spread.getSheetByName('Битрикс24 Компании');
+  dateAdd(sheet_, 12068);
+}
+
+function dateAdd(sheet, rowStart) {
+  // дату добавления добавить
+
+  const columnHead = 'Дата выгрузки из Битрикс24';
+  const numColumns = sheet.getDataRange().getNumColumns();
+  // диапазон строки
+  const range_Row_ = sheet.getRange(1, 1, 1, numColumns);
+  const a2 = range_Row_.getValues();
+
+  // найти столбец
+  let column = 0;
+
+  for (let col = 0; col < a2[0].length; col++) {
+
+    if (a2[0][col] == columnHead) {
+      column = col + 1;
+      break;
+    }
+  }
+
+  if (column > 0) {
+    const numRows = sheet.getLastRow() - rowStart + 1;
+    const rangeColumn = sheet.getRange(rowStart, column, numRows, 1)
+    rangeColumn.setValue(new Date()).setNumberFormat("yyyy.MM.dd");
+  }
+}
+
+function columnNumber2Letter_Test() {
+  let letter = columnNumber2Letter(27);
+  console.log(letter);
+}
+
+function columnNumber2Letter(column) {
+  // номер столбца в букву
+
+  let tempor, letter = '';
+  while (column > 0) {
+    tempor = (column - 1) % 26;
+    letter = String.fromCharCode(tempor + 65) + letter;
+    column = (column - tempor - 1) / 26;
+  }
+  return letter;
+}
+
+function array2d2Range(cell, a2d) {
+  // массив 2мерный вставить на лист
+
+  let sheet_ob = cell.getSheet();
+  let row_numb = cell.getRow();
+  let col_numb = cell.getColumn();
+
+  sheet_ob.getRange(row_numb, col_numb, a2d.length, a2d[0].length).setValues(a2d);
+}
+
+function a12map(a1) {
+  // массив одномерный в ассоциативный
+
+  const arr = new Map();
+  for (let indx = 0; indx < a1.length; indx++) {
+    arr.set(a1[indx], indx);
+  }
+  return arr;
+}
+
+function sheetRowsEmptyAddIfNeed(sheetDest, sheetSour) {
+  // добавить пустые строки
+  // если их не достаточно
+  // для вставки данных из sheetSour в sheetDest
+
+  // const spread = SpreadsheetApp.getActive();
+  // const sheetDest = spread.getSheetByName('Битрикс24 Компании');
+  // const sheetSour = spread.getSheetByName('Данные из Битрикс24');
+
+  // непустых строк на листе
+  const sheetSourRowsValuesCount = sheetSour.getDataRange().getLastRow();
+  // всего строк на листе
+  const sheetDestRowsAllCount = sheetDest.getRange("A:A").getValues().length;
+  // непустых строк на листе
+  const sheetDestRowsValuesCount = sheetDest.getDataRange().getLastRow();
+  // свободных строк
+  const sheetDestRowsFree = sheetDestRowsAllCount - sheetDestRowsValuesCount;
+
+  if (sheetDestRowsFree < sheetSourRowsValuesCount) {
+    const rowsAdd = sheetSourRowsValuesCount - sheetDestRowsFree;
+    // This inserts five rows after the first row
+    // sheet.insertRowsAfter(1, 5);
+    sheetDest.insertRowsAfter(sheetDestRowsValuesCount, rowsAdd);
+  }
+}
+
+function rangeRowsEmptyBottom_Test() {
+  const spread = SpreadsheetApp.getActive();
+  const sheet_ = spread.getSheetByName("Битрикс24 Компании");
+  const range_ = rangeRowsEmptyBottom(sheet_);
+  if (typeof (range_) !== 'undefined') {
+    const rowsCo = range.getNumRows();
+  }
+  console.log(rowsCo);
+}
+
+
+function rangeRowsEmptyBottom(sheet) {
+  // вернуть диапазон пустых строк в низу листа
+
+  var rowsMax = sheet.getMaxRows();
+  var rowLast = sheet.getLastRow();
+
+  if (rowsMax > rowLast) {
+    // getRange(row, column, numRows, numColumns) 
+    numColumns = sheet.getActiveRange().getNumColumns();
+    return sheet.getRange(rowLast + 1, 1, rowsMax, numColumns);
+  }
+}
+
+
+function rangeColumnsHeadsUpdate_RUN() {
+  // подготовка и запуск
+  // удалить столбцы если значения ячейки нет в диапазоне формул
+  // разовая акция
+
+  const spread = SpreadsheetApp.getActive();
+  const sheet = spread.getSheetByName('Битрикс24 Компании');
+  const rangeFormula = sheet.getRange('MO1:MT1');
+  const rangeHeaders = sheet.getRange('A1:MN1');
+
+  // rangeHeaders.setBackground('white');
+
+  // rangeColumnsHeadsUpdate(rangeFormula, rangeHeaders, sheet);
+
+}
+
+function rangeColumnsHeadsUpdate(rangeFormula, rangeHeaders, sheet) {
+  // удалить столбцы если значения ячейки нет в диапазоне формул
+  // диапазоны начинаются с 1,1
+
+  const a2Heads = rangeHeaders.getValues();
+  const a2Formu = rangeFormula.getFormulas();
+  const formula = a2Formu.join('');
+
+  let stri = '';
+  let cell = '';
+
+  const a2Length = a2Heads[0].length;
+
+  for (let col = a2Length - 1; col > -1; col--) {
+
+    stri = '"' + a2Heads[0][col] + '"';
+
+    if (stri !== '') {
+      if (formula.indexOf(stri) == -1) {
+
+        // покрасить ячейку
+        // cell = sheet.getRange(1, col + 1, 1, 1);
+        // cell.setBackground("red");
+
+        // закоментил от греха подальше
+        // sheet.deleteColumn(col + 1);
+
+      }
+    }
+  }
+}
