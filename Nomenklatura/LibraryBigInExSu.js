@@ -1629,16 +1629,17 @@ function rangeColumnsHeadsUpdate(rangeFormula, rangeHeaders, sheet) {
 }
 
 function dateFormatYMDHMS_test() {
-  console.log(dateFormatYMDHMS(Date()));
+  console.log(dateFormatYMDHMS(new Date()));
 }
 
 function dateFormatYMDHMS(d) {
   // d = new DatE();
+  // мск, московское
 
   return d.getFullYear() + "-" +
     ("0" + (d.getMonth() + 1)).slice(-2) + "-" +
     ("0" + d.getDate()).slice(-2) + " " +
-    ("0" + d.getHours()).slice(-2) + ":" +
+    ("0" + (d.getHours() + 7)).slice(-2) + ":" +
     ("0" + d.getMinutes()).slice(-2) + ":" +
     ("0" + d.getSeconds()).slice(-2);
 }

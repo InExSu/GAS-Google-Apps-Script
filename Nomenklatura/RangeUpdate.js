@@ -112,7 +112,7 @@ function Range_Update_by_Heads_RUN() {
 
             const sheetLog = SpreadsheetApp.getActive().getSheetByName('Log 02');
 
-            Range_Update_by_Heads(range_Old, column_Key_Old, range_New, column_Key_New, a2_Columns, sheetLog, sheet_New.getName());
+            Range_Update_by_Heads(range_Old, column_Key_Old, range_New, column_Key_New, a2_Columns, sheetLog, sheet_Old.getName());
 
             // восстановить формулу в Артикул
             // formula_n = '=ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы СТ\'!$B:$C;2;0));\n   ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы ТМ\'!$B:$C;2;0));\n     ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы АРТИ\'!$B:$C;2;0));\n        ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы ЭХМЗ\'!$B:$C;2;0));\n   "Не найдено";\n   ВПР(A2;\'Артикулы ЭХМЗ\'!$B:$C;2;0));\n   ВПР(A2;\'Артикулы АРТИ\'!$B:$C;2;0));\n   ВПР(A2;\'Артикулы ТМ\'!$B:$C;2;0));\n   ВПР(A2;\'Артикулы СТ\'!$B:$C;2;0))'
@@ -123,10 +123,11 @@ function Range_Update_by_Heads_RUN() {
             // // формулу протянуть до последней
             // origin.copyTo(target);
 
-            choice = Browser.msgBox('Показать лист ' + sheetLog.getName(), Browser.Buttons.YES_NO);
-            if (choice == 'yes') {
-              sheetLog.activate();
-            }
+            // choice = Browser.msgBox('Показать лист ' + sheetLog.getName(), Browser.Buttons.YES_NO);
+            // if (choice == 'yes') {
+            //   sheetLog.activate();
+            // }
+            sheetLog.activate();
           }
         }
       }

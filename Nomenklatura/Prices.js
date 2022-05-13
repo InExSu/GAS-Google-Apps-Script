@@ -1029,7 +1029,7 @@ function priceUpdateFromPivot(sheet_Pivot, sheet_Price) {
   const mapPriceArticsRowCol = Array2D_Row_Column_2_Map(a2PriceArtics, reg);
   let a2Log = [];
 
-  forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticsRowCol, a2Log, sheet_Pivot.getName(), reg );
+  forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticsRowCol, a2Log, sheet_Price.getName(), reg );
 
   // положи на лист
   sheet_Price.getRange('C:H').setValues(a2PricePrices);
@@ -1048,8 +1048,8 @@ function forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPri
   // 		поставить цену в a2PricePrices[row][col]
   // 		записать в массив лога
 
-  let a1Log = [];
-  let priceOld, priceNew;
+  // let a1Log = [];
+  // let priceOld, priceNew;
 
   for (let row = 0; row < a2PivotArtic.length; row++) {
 
@@ -1063,10 +1063,10 @@ function forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPri
         let rowPrice = a1RowCol[0];
         let colPrice = a1RowCol[1];
 
-        priceOld = a2PricePrices[rowPrice][colPrice];
+        let priceOld = a2PricePrices[rowPrice][colPrice];
         priceOld = convert2FloatCommaPointIfPossible(priceOld);
 
-        priceNew = a2PivotPrice[row][0];
+        let priceNew = a2PivotPrice[row][0];
         priceNew = convert2FloatCommaPointIfPossible(priceNew);
 
         if (priceOld !== priceNew) {
@@ -1074,6 +1074,7 @@ function forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPri
           a2PricePrices[rowPrice][colPrice] = priceNew;
 
           // ДатаВремя	Лист	Строка	Столбец	Было	Стало
+          let a1Log = [];
           a1Log[0] = dateFormatYMDHMS(new Date());
           a1Log[1] = sheetName4Log;
           a1Log[2] = rowPrice + 1;
