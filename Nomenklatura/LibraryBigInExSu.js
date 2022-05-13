@@ -32,7 +32,7 @@ function Array2D_Update_by_Map_Test() {
   let array2d_columns = [[1, 1]];
   // Logger.log('a2d_Update ' + a2d_Old);
 
-  a2d_New = Array2D_Update_by_Map(a2d_New, a2d_Old, column_code, map_codes, array2d_columns, 'Log');
+  a2d_New = Array2D_Update_by_Map(a2d_New, a2d_Old, column_code, map_codes, array2d_columns, 'Log 02');
 
   // Logger.log('a2d_New ' + a2d_New);
   // Logger.log('a2d_Old ' + a2d_Old);
@@ -40,7 +40,7 @@ function Array2D_Update_by_Map_Test() {
 
 
 function Array2D_Update_by_Map(array2d_New, array2d_Old,
-  column_code, map_codes, array2d_columns, sheet_log_name) {
+  column_code, map_codes, array2d_columns, sheetLog, sheetName4Log) {
   // обновить массив из другого массива по коду и соответствия столбцов
   // Проходом по столбцу ключа в массиве назначения				
   // 	Найти код в столбце источнике (словарь)			
@@ -57,16 +57,16 @@ function Array2D_Update_by_Map(array2d_New, array2d_Old,
   let col_New = -1;
   let col_Old = -1;
 
-  //var a2d_log = [['Код', 'Строка', 'Столбец', 'Было', 'Стало']];
-  let a2d_log = [['Лог обновления', '', Utilities.formatDate(new Date(), "GMT+3", "yyyy-MM-dd HH:mm:ss' мск'"), '', '']];
-  a2d_log.push(['', '', '', '', '']);
-  a2d_log.push(['Код', 'Строка', 'Столбец', 'Было', 'Стало']);
+  let a2d_log = [];
+  // a2d_log.push(['', '', '', '', '']);
+  // a2d_log.push(['Код', 'Строка', 'Столбец', 'Было', 'Стало']);
 
   let col = '';
   let was_new = '';
   let now_new = '';
   let was_old = '';
   let now_old = '';
+  const sheetLogName = sheetLog.getName();
 
   for (row_Old = 0; row_Old < array2d_ret.length; row_Old++) {
 
@@ -109,8 +109,18 @@ function Array2D_Update_by_Map(array2d_New, array2d_Old,
           // заголовок столбца в отчёт
           col = array2d_New[0][col_New];
 
-          if (sheet_log_name) {
-            a2d_log.push([code, row_Old + 1, col, was_old, now_new]);
+          if (sheetLog) {
+
+            let a1Log = [];
+            // ДатаВремя	Лист	Строка	Столбец	Было	Стало
+            a1Log[0] = dateFormatYMDHMS(new Date());
+            a1Log[1] = sheetName4Log;
+            a1Log[2] = row_Old + 1;
+            a1Log[3] = columnNumber2Letter(col_Old + 1);
+            a1Log[4] = was_new;
+            a1Log[5] = now_new;
+
+            a2d_log.push(a1Log);
           }
 
           array2d_ret[row_Old][col_Old] = now_new;
@@ -119,13 +129,9 @@ function Array2D_Update_by_Map(array2d_New, array2d_Old,
     }
   }
 
-  if (sheet_log_name) {
+  if (sheetLog) {
     // массив лога на лист
-    let sheet_logit = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheet_log_name);
-    sheet_logit.clear();
-
-    cell = sheet_logit.getRange(1, 1);
-    array2d2Range(cell, a2d_log);
+    sheetAddA2(sheetLog, a2d_log);
   }
 
   return array2d_ret;
@@ -961,20 +967,20 @@ function convert2FloatCommaPointIfPossible_Test() {
   let value = '1';
   let wante = 1;
   let conve = convert2FloatCommaPointIfPossible(value);
-  if (conve != wante) {
+  if (conve !== wante) {
     Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
   }
 
-  value = '2.00';
-  wante = 2;
+  value = 2.00;
+  wante = 2.00;
   conve = convert2FloatCommaPointIfPossible(value);
-  if (conve != wante) {
+  if (conve !== wante) {
     Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
   }
   value = '2 100 830,00';
   wante = 2100830;
   conve = convert2FloatCommaPointIfPossible(value);
-  if (conve != wante) {
+  if (conve !== wante) {
     Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
   }
 
@@ -1018,7 +1024,8 @@ function convert2FloatCommaPointIfPossible(value_old) {
   }
 
   if (digitsCommaPointSpace(value_old)) {
-    if (value_old % 1 !== 0) {
+    let type = typeof value_old;
+    if (typeof value_old !== "number") {
       let value_new = value_old.replace(/\s/g, '');
       value_new = value_new.replace(",", ".");
       value_new = convertIfPossible(value_new, parseFloat);
@@ -1029,7 +1036,7 @@ function convert2FloatCommaPointIfPossible(value_old) {
 }
 
 function isNumber_Test() {
-  console.log('число  860', isNumber(860));
+  console.log('число  860.97', isNumber(860));
   console.log('строка 860', isNumber('860'));
   console.log('строка 860.0', isNumber('860.0'));
   console.log('строка 2 100 830,00', isNumber('2 100 830,00'));
@@ -1399,18 +1406,6 @@ function formatDate(date) {
   });
 }
 
-function columnNumber2Letter(column) {
-  // номер столбца в букву
-
-  let tempor, letter = '';
-  while (column > 0) {
-    tempor = (column - 1) % 26;
-    letter = String.fromCharCode(tempor + 65) + letter;
-    column = (column - tempor - 1) / 26;
-  }
-  return letter;
-}
-
 function a12map(a1) {
   // массив одномерный в ассоциативный
 
@@ -1534,26 +1529,6 @@ function columnNumber2Letter(column) {
   return letter;
 }
 
-function array2d2Range(cell, a2d) {
-  // массив 2мерный вставить на лист
-
-  let sheet_ob = cell.getSheet();
-  let row_numb = cell.getRow();
-  let col_numb = cell.getColumn();
-
-  sheet_ob.getRange(row_numb, col_numb, a2d.length, a2d[0].length).setValues(a2d);
-}
-
-function a12map(a1) {
-  // массив одномерный в ассоциативный
-
-  const arr = new Map();
-  for (let indx = 0; indx < a1.length; indx++) {
-    arr.set(a1[indx], indx);
-  }
-  return arr;
-}
-
 function sheetRowsEmptyAddIfNeed(sheetDest, sheetSour) {
   // добавить пустые строки
   // если их не достаточно
@@ -1651,4 +1626,19 @@ function rangeColumnsHeadsUpdate(rangeFormula, rangeHeaders, sheet) {
       }
     }
   }
+}
+
+function dateFormatYMDHMS_test() {
+  console.log(dateFormatYMDHMS(Date()));
+}
+
+function dateFormatYMDHMS(d) {
+  // d = new DatE();
+
+  return d.getFullYear() + "-" +
+    ("0" + (d.getMonth() + 1)).slice(-2) + "-" +
+    ("0" + d.getDate()).slice(-2) + " " +
+    ("0" + d.getHours()).slice(-2) + ":" +
+    ("0" + d.getMinutes()).slice(-2) + ":" +
+    ("0" + d.getSeconds()).slice(-2);
 }

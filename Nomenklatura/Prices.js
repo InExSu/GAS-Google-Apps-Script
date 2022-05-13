@@ -974,9 +974,14 @@ function priceSNGUpdate(a1RowsHeights) {
 }
 
 function priceUpdateFromPivot_RUN() {
+  // обновить цены из "Прайс без НДС" из "сводная таблица"
+
   const spread = SpreadsheetApp.getActive();
-  const sheet_Pivot = spread.getSheetByName('сводная таблица (копия)');
-  const sheet_Price = spread.getSheetByName('Прайс без НДС (копия)');
+  // const sheet_Pivot = spread.getSheetByName('сводная таблица (копия)');
+  // const sheet_Price = spread.getSheetByName('Прайс без НДС (копия)');
+  const sheet_Pivot = spread.getSheetByName('сводная таблица');
+  const sheet_Price = spread.getSheetByName('Прайс без НДС');
+
   priceUpdateFromPivot(sheet_Pivot, sheet_Price);
 }
 
@@ -1010,7 +1015,7 @@ function priceUpdateFromPivot(sheet_Pivot, sheet_Price) {
   //   sheet_Price = spread.getSheetByName('Прайс без НДС (копия)');
   // }
 
-  const sheet_Log_2 = spread.getSheetByName('Log_02');
+  const sheet_Log_2 = spread.getSheetByName('Log 02');
 
   // сделай проверку на названия столбцов
   const a2PivotPrice = sheet_Pivot.getRange('J:J').getValues();
@@ -1020,20 +1025,21 @@ function priceUpdateFromPivot(sheet_Pivot, sheet_Price) {
   const a2PricePrices = sheet_Price.getRange('C:H').getValues();
   const a2PriceArtics = sheet_Price.getRange('L:Q').getValues();
 
-  const reg = /\d{3}-\d{3}-\d{4}/
-  const mapPriceArticRowCol = Array2D_Row_Column_2_Map(a2PriceArtics, reg);
+  const reg = /\d{3}-\d{3}-\d{4}/;
+  const mapPriceArticsRowCol = Array2D_Row_Column_2_Map(a2PriceArtics, reg);
   let a2Log = [];
 
-  forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticRowCol, a2Log, 'сводная таблица', reg, sheet_Pivot.getName(), "J");
+  forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticsRowCol, a2Log, sheet_Pivot.getName(), reg );
 
   // положи на лист
-  // sheet_Pivot.getRange('J:J').setValues(a2PivotPrice);
+  sheet_Price.getRange('C:H').setValues(a2PricePrices);
 
   // запиши в лог
   sheetAddA2(sheet_Log_2, a2Log);
+  sheet_Log_2.activate();
 }
 
-function forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticRowCol, a2Log, sheetName4Log, reg, sheetName4Log, column4log) {
+function forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticsRowCol, a2Log, sheetName4Log, reg) {
   // 2022-04-29
   // Проходом по a2PivotArtic
   // 	Если артикул в mapPriceArticRowCol
@@ -1051,27 +1057,27 @@ function forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPri
 
     if (reg.test(artic)) {
 
-      priceOld = a2PivotPrice[row][0];
-      priceOld = convert2FloatCommaPointIfPossible(priceOld);
+      if (mapPriceArticsRowCol.has(artic)) {
 
-      if (mapPriceArticRowCol.has(artic)) {
-
-        let a1RowCol = mapPriceArticRowCol.get(artic);
+        let a1RowCol = mapPriceArticsRowCol.get(artic);
         let rowPrice = a1RowCol[0];
         let colPrice = a1RowCol[1];
 
-        priceNew = a2PricePrices[rowPrice][colPrice];
+        priceOld = a2PricePrices[rowPrice][colPrice];
+        priceOld = convert2FloatCommaPointIfPossible(priceOld);
+
+        priceNew = a2PivotPrice[row][0];
         priceNew = convert2FloatCommaPointIfPossible(priceNew);
 
         if (priceOld !== priceNew) {
 
-          a2PivotPrice[row][0] = priceNew;
+          a2PricePrices[rowPrice][colPrice] = priceNew;
 
           // ДатаВремя	Лист	Строка	Столбец	Было	Стало
-          a1Log[0] = formatDate(Date());
+          a1Log[0] = dateFormatYMDHMS(new Date());
           a1Log[1] = sheetName4Log;
-          a1Log[2] = row;
-          a1Log[3] = column4log;
+          a1Log[2] = rowPrice + 1;
+          a1Log[3] = columnNumber2Letter(colPrice + 3);
           a1Log[4] = priceOld;
           a1Log[5] = priceNew;
 

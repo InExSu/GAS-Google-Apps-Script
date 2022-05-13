@@ -110,7 +110,9 @@ function Range_Update_by_Heads_RUN() {
             Logger.log('Выход. Не найден столбец кода в 1ой строке диапазоне назначения');
           } else {
 
-            Range_Update_by_Heads(range_Old, column_Key_Old, range_New, column_Key_New, a2_Columns, 'Log')
+            const sheetLog = SpreadsheetApp.getActive().getSheetByName('Log 02');
+
+            Range_Update_by_Heads(range_Old, column_Key_Old, range_New, column_Key_New, a2_Columns, sheetLog, sheet_New.getName());
 
             // восстановить формулу в Артикул
             // formula_n = '=ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы СТ\'!$B:$C;2;0));\n   ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы ТМ\'!$B:$C;2;0));\n     ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы АРТИ\'!$B:$C;2;0));\n        ЕСЛИ(ЕНД(ВПР(A2;\'Артикулы ЭХМЗ\'!$B:$C;2;0));\n   "Не найдено";\n   ВПР(A2;\'Артикулы ЭХМЗ\'!$B:$C;2;0));\n   ВПР(A2;\'Артикулы АРТИ\'!$B:$C;2;0));\n   ВПР(A2;\'Артикулы ТМ\'!$B:$C;2;0));\n   ВПР(A2;\'Артикулы СТ\'!$B:$C;2;0))'
@@ -121,10 +123,9 @@ function Range_Update_by_Heads_RUN() {
             // // формулу протянуть до последней
             // origin.copyTo(target);
 
-            choice = Browser.msgBox('Показать лист Log', Browser.Buttons.YES_NO);
+            choice = Browser.msgBox('Показать лист ' + sheetLog.getName(), Browser.Buttons.YES_NO);
             if (choice == 'yes') {
-              var sheet_act = SpreadsheetApp.getActiveSpreadsheet().getSheetByName('Log');
-              sheet_act.activate();
+              sheetLog.activate();
             }
           }
         }
@@ -144,7 +145,7 @@ function rangeFormulaFill(sheet, cellPut, rangeFill, formula) {
   origin.copyTo(target);
 }
 
-function Range_Update_by_Heads(rng_Old, column_Key_Old, rng_New, column_Key_New, a2d_columns, log_make) {
+function Range_Update_by_Heads(rng_Old, column_Key_Old, rng_New, column_Key_New, a2d_columns, sheetLog, sheetName4Log) {
 
   // Обновить диапазон по совпадению в ключевых столбцах с учётом наименований столбцов
   // диапазоны в массивы
@@ -158,9 +159,8 @@ function Range_Update_by_Heads(rng_Old, column_Key_Old, rng_New, column_Key_New,
   let map_Sea = Array2D_Column_2_Map(a2d_New, column_Key_New);
 
   // основное действие
-
   let a2d_Ret = Array2D_Update_by_Map(a2d_New, a2d_Old,
-    column_Key_Old, map_Sea, a2d_columns, 'Log');
+    column_Key_Old, map_Sea, a2d_columns, sheetLog, sheetName4Log);
 
   // массив положить на лист
   array2d2Range(rng_Old, a2d_Ret);
