@@ -975,8 +975,8 @@ function priceSNGUpdate(a1RowsHeights) {
 
 function priceUpdateFromPivot_RUN() {
   const spread = SpreadsheetApp.getActive();
-  const sheet_Pivot = spread.getSheetByName('сводная таблица');
-  const sheet_Price = spread.getSheetByName('Прайс без НДС');
+  const sheet_Pivot = spread.getSheetByName('сводная таблица (копия)');
+  const sheet_Price = spread.getSheetByName('Прайс без НДС (копия)');
   priceUpdateFromPivot(sheet_Pivot, sheet_Price);
 }
 
@@ -1003,41 +1003,96 @@ function priceUpdateFromPivot(sheet_Pivot, sheet_Price) {
 
   const spread = SpreadsheetApp.getActive();
 
-  if (typeof(sheet_Pivot) === 'undefined') {
-    sheet_Pivot = spread.getSheetByName('сводная таблица (копия)');
-  }
-  if (typeof(sheet_Price) === 'undefined') {
-    sheet_Price = spread.getSheetByName('Прайс без НДС (копия)');
-  }
+  // if (typeof(sheet_Pivot) === 'undefined') {
+  //   sheet_Pivot = spread.getSheetByName('сводная таблица (копия)');
+  // }
+  // if (typeof(sheet_Price) === 'undefined') {
+  //   sheet_Price = spread.getSheetByName('Прайс без НДС (копия)');
+  // }
 
   const sheet_Log_2 = spread.getSheetByName('Log_02');
 
+  // сделай проверку на названия столбцов
+  const a2PivotPrice = sheet_Pivot.getRange('J:J').getValues();
   const a2PivotArtic = sheet_Pivot.getRange('B:B').getValues();
-  let a2PivotPrice = sheet_Pivot.getRange('J:J').getValues();
 
-  const a2PriceArtics = sheet_Price.getRange('L:Q').getValues();
+  // сделай проверку на названия столбцов
   const a2PricePrices = sheet_Price.getRange('C:H').getValues();
+  const a2PriceArtics = sheet_Price.getRange('L:Q').getValues();
 
-  const mapPriceArticRowCol = Array2D_Row_Column_2_Map(a2PriceArtics, /\d{3}-\d{3}-\d{4}/);
+  const reg = /\d{3}-\d{3}-\d{4}/
+  const mapPriceArticRowCol = Array2D_Row_Column_2_Map(a2PriceArtics, reg);
   let a2Log = [];
 
-  const a2PriceNew = forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticRowCol, a2Log, 'сводная таблица')
+  forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticRowCol, a2Log, 'сводная таблица', reg, sheet_Pivot.getName(), "J");
+
+  // положи на лист
+  // sheet_Pivot.getRange('J:J').setValues(a2PivotPrice);
 
   // запиши в лог
-
-  // sheet_Pivot.getRange('J:J').setValues(a2PriceNew);
-
+  sheetAddA2(sheet_Log_2, a2Log);
 }
 
-function forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticRowCol, a2Log, sheetName4Log) {
+function forA2PriceUpdateArtic(a2PivotArtic, a2PivotPrice, a2PricePrices, mapPriceArticRowCol, a2Log, sheetName4Log, reg, sheetName4Log, column4log) {
   // 2022-04-29
   // Проходом по a2PivotArtic
   // 	Если артикул в mapPriceArticRowCol
   // 		взять цену из a2PivotPrice
   // 		взять строку, столбец из mapPriceArticRowCol
   // 		поставить цену в a2PricePrices[row][col]
-  // 		записать в массив лог
+  // 		записать в массив лога
 
+  let a1Log = [];
+  let priceOld, priceNew;
+
+  for (let row = 0; row < a2PivotArtic.length; row++) {
+
+    let artic = a2PivotArtic[row][0];
+
+    if (reg.test(artic)) {
+
+      priceOld = a2PivotPrice[row][0];
+      priceOld = convert2FloatCommaPointIfPossible(priceOld);
+
+      if (mapPriceArticRowCol.has(artic)) {
+
+        let a1RowCol = mapPriceArticRowCol.get(artic);
+        let rowPrice = a1RowCol[0];
+        let colPrice = a1RowCol[1];
+
+        priceNew = a2PricePrices[rowPrice][colPrice];
+        priceNew = convert2FloatCommaPointIfPossible(priceNew);
+
+        if (priceOld !== priceNew) {
+
+          a2PivotPrice[row][0] = priceNew;
+
+          // ДатаВремя	Лист	Строка	Столбец	Было	Стало
+          a1Log[0] = formatDate(Date());
+          a1Log[1] = sheetName4Log;
+          a1Log[2] = row;
+          a1Log[3] = column4log;
+          a1Log[4] = priceOld;
+          a1Log[5] = priceNew;
+
+          a2Log.push(a1Log);
+        }
+      }
+    }
+  }
+}
+
+function sheetAddA2(sheet, a2) {
+  // добавить массив к строкам листа вниз
+  // найти последнюю пустую строку
+  // вставить массив
+
+  if (Array.isArray(a2)) {
+    if (a2.length > 0 && a2[0].length > 0) {
+      let row = sheet.getDataRange().getLastRow() + 1;
+      sheet.getRange(row, 1, a2.length, a2[0].length).setValues(a2);
+    }
+  }
 }
 
 function Array2D_Row_Column_2_Map_Test() {

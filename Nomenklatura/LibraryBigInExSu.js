@@ -570,7 +570,10 @@ function symbols_NOT_in_template(string_in, string_chek) {
 
 
 function string_2_float_if_Test() {
-  // Logger.log('90000013547');
+  console.log('90000013547', string_2_float_if('90000013547'));
+  console.log('5 88.0', string_2_float_if('5 88.0'));
+  console.log('5 88,0', string_2_float_if('5 88,0'));
+  console.log('588', string_2_float_if('588'));
 }
 
 function string_2_float_if(string_in) {
@@ -955,9 +958,22 @@ function convertIfPossible(value, method) {
 }
 
 function convert2FloatCommaPointIfPossible_Test() {
-  let value = '2 100 830,00';
-  let wante = 2100830;
+  let value = '1';
+  let wante = 1;
   let conve = convert2FloatCommaPointIfPossible(value);
+  if (conve != wante) {
+    Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
+  }
+
+  value = '2.00';
+  wante = 2;
+  conve = convert2FloatCommaPointIfPossible(value);
+  if (conve != wante) {
+    Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
+  }
+  value = '2 100 830,00';
+  wante = 2100830;
+  conve = convert2FloatCommaPointIfPossible(value);
   if (conve != wante) {
     Logger.log('convert2FloatCommaPointIfPossible: %s != %s', conve, wante);
   }
@@ -993,7 +1009,7 @@ function convert2FloatCommaPointIfPossible_Test() {
 
 function convert2FloatCommaPointIfPossible(value_old) {
   // конвертировать в число с плавающей точкой,
-  // с учётом запятой и запятой
+  // с учётом запятой и точки
   // сначала убедиться, что в строке только нужные символы
 
   // для использования в map массива из диапазона
@@ -1002,7 +1018,7 @@ function convert2FloatCommaPointIfPossible(value_old) {
   }
 
   if (digitsCommaPointSpace(value_old)) {
-    if (value_old % 1 != 0) {
+    if (value_old % 1 !== 0) {
       let value_new = value_old.replace(/\s/g, '');
       value_new = value_new.replace(",", ".");
       value_new = convertIfPossible(value_new, parseFloat);
