@@ -5,6 +5,8 @@ function onEdit(event) {
 
 function priceFix(event) {
 
+  const sheetName = event.source.getActiveSheet();// лист события
+  
   if (sheetName == 'сводная таблица') {
     if (col == 10) {
       // записать 
