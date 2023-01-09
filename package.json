@@ -9,7 +9,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@types/google-apps-script": "^1.0.44"
+    "@types/google-apps-script": "^1.0.56"
   },
   "type": "module"
 }

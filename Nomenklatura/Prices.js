@@ -716,7 +716,8 @@ function pricesAllUpdateCells_Console(leftValue, rightValue, rightName, multi) {
 }
 
 function pricesAllUpdate() {
-  // прайсы ВСЕ обновить из "Прайс без НДС"
+  // прайсы обновить ВСЕ из "Прайс без НДС"
+  // вызываю по кнопке листа
 
   let spread = SpreadsheetApp.getActive();
   let sheetBezNDS_ = spread.getSheetByName('Прайс без НДС');
@@ -1134,5 +1135,3 @@ function Array2D_Row_Column_2_Map(array2d, regexp) {
   }
   return map_return;
 }
-
-

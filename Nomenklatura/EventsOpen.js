@@ -43,6 +43,8 @@ function onOpen() {
     
     .addItem('Создать копию книги', 'spreadsheetCopy')
 
+    .addItem('Цена, руб (Без НДС) свежие красным', 'priceColor')
+
     // .addItem('Нули формат', 'selectionNullFormatted')
 
     .addSeparator()
@@ -57,7 +59,7 @@ function onOpen() {
 
 function formulaCodeFind() {
 
-  // ячейки выделенные обрамить слева и справа
+  // ячейки выделенные обрамить слева и справа формулой
   const column = columnBySheet();
   if (column === undefined) { return; }
 
