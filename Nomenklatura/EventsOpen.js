@@ -1,3 +1,44 @@
+function onEdit(event) {
+  //Возникает при изменении ячейки
+  priceFix(event);
+}
+
+function priceFix(event) {
+
+  if (sheetName == 'сводная таблица') {
+    if (col == 10) {
+      // записать 
+      priceFixAdd(event, 'Log изменений листов');
+    }
+  }
+}
+
+/**
+ * добавить запись в низ листа
+ */
+function priceFixAdd(event, sheet_Log_Name) {
+
+  const sheet_Log = SpreadsheetApp.getActive().getSheetByName(sheet_Log_Name);
+
+  const sheet_Source = event.source.getActiveSheet();// лист события
+  const sheet_Source_Name = sheet_Source.getName();
+  const row = event.range.getRow();      //Номер строки
+  const col = event.range.getColumn();  //Номер столбца
+  const value_New = event.value;            //Новое значение
+  const value_Old = event.oldValue;        //Старое значение
+
+  if (value_Old != value_New) {
+    // Дата	Лист_Имя	Строка	Столбец	Было	Стало
+    // создать массив, 
+    const date_Formatted = Utilities.formatDate(new Date(), "GMT+3", "yyyy-MM-dd HH:mm:ss");
+    let a2 = [[date_Formatted], [sheet_Source_Name], [row], [col], [value_Old], [value_New]];
+    // ячейку последнюю найти
+    let log_Row = sheet.getDataRange().getLastRow() + 1;
+    // вставить массив на лист
+    sheet_Log.getRange(log_Row, 1, a2.length, a2[0].length).setValues(a2);
+  }
+}
+
 function selectionDuplicates() {
   // найти строки различающиеся ростами и если разные цены - сообщить пользователю
   var a2 = SpreadsheetApp.getActiveSpreadsheet().getSelection().getActiveRange().getValues();
@@ -40,7 +81,7 @@ function onOpen() {
     .addItem('Обрамить', 'formulaCodeFind')
 
     .addItem('Дубликаты', 'selectionDuplicates')
-    
+
     .addItem('Создать копию книги', 'spreadsheetCopy')
 
     .addItem('Цена, руб (Без НДС) свежие красным', 'priceColor')
@@ -129,3 +170,4 @@ function columnBySheet() {
 function sheetActive() {
   Browser.msgBox(SpreadsheetApp.getActiveSheet().getName())
 }
+
