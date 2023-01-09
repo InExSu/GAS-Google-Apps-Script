@@ -1,15 +1,34 @@
 function onEdit(event) {
   //Возникает при изменении ячейки
+  Logger.log('onEdit');
+
+  const sheet_Source = event.source.getActiveSheet();// лист события
+  const sheet_Source_Name = sheet_Source.getName();
+  const row = event.range.getRow();      //Номер строки
+
+  const value_New = event.value;            //Новое значение
+  const value_Old = event.oldValue;        //Старое значение
+
+  Logger.log('sheet_Source_Name  = ' + sheet_Source_Name);
+
   priceFix(event);
 }
 
 function priceFix(event) {
+  Logger.log('priceFix');
+  Logger.log(event);
+  // {range=Range, source=Spreadsheet, value=123, user=mihail.popov@zelinskygroup.com, oldValue=321.0, authMode=LIMITED}
 
-  const sheetName = event.source.getActiveSheet();// лист события
-  
+  const sheetName = event.source.getActiveSheet().getName();// лист события
+  const col = event.range.getColumn();  //Номер столбца
+
+  Logger.log('sheetName = ' + sheetName);
+  Logger.log('col = ' + col);
+
   if (sheetName == 'сводная таблица') {
     if (col == 10) {
       // записать 
+      Logger.log('запуск priceFixAdd');
       priceFixAdd(event, 'Log изменений листов');
     }
   }
@@ -24,8 +43,10 @@ function priceFixAdd(event, sheet_Log_Name) {
 
   const sheet_Source = event.source.getActiveSheet();// лист события
   const sheet_Source_Name = sheet_Source.getName();
-  const row = event.range.getRow();      //Номер строки
   const col = event.range.getColumn();  //Номер столбца
+  const row = event.range.getRow();      //Номер строки
+  const user = event.user;
+
   const value_New = event.value;            //Новое значение
   const value_Old = event.oldValue;        //Старое значение
 
@@ -33,9 +54,10 @@ function priceFixAdd(event, sheet_Log_Name) {
     // Дата	Лист_Имя	Строка	Столбец	Было	Стало
     // создать массив, 
     const date_Formatted = Utilities.formatDate(new Date(), "GMT+3", "yyyy-MM-dd HH:mm:ss");
-    let a2 = [[date_Formatted], [sheet_Source_Name], [row], [col], [value_Old], [value_New]];
+    // let a2 = [[date_Formatted], [sheet_Source_Name], [row], [col], [value_Old], [value_New], [user]];
+    let a2 = [[date_Formatted, sheet_Source_Name, row, col, value_Old, value_New, user]];
     // ячейку последнюю найти
-    let log_Row = sheet.getDataRange().getLastRow() + 1;
+    let log_Row = sheet_Log.getDataRange().getLastRow() + 1;
     // вставить массив на лист
     sheet_Log.getRange(log_Row, 1, a2.length, a2[0].length).setValues(a2);
   }
