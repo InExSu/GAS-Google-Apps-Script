@@ -2,37 +2,21 @@ function onEdit(event) {
   //Возникает при изменении ячейки
   // Logger.log('onEdit');
 
-  const sheet_Source = event.source.getActiveSheet();// лист события
-  const sheet_Source_Name = sheet_Source.getName();
-  const row = event.range.getRow();      //Номер строки
-
-  const value_New = event.value;            //Новое значение
-  const value_Old = event.oldValue;        //Старое значение
-
-  // Logger.log('sheet_Source_Name  = ' + sheet_Source_Name);
-
-  priceFix(event);
-}
-
-function priceFix(event) {
-  // Logger.log('priceFix');
-  // Logger.log(event);
-  // {range=Range, source=Spreadsheet, value=123, user=mihail.popov@zelinskygroup.com, oldValue=321.0, authMode=LIMITED}
-
   const sheetName = event.source.getActiveSheet().getName();// лист события
-  const col = event.range.getColumn();  //Номер столбца
-
-  // Logger.log('sheetName = ' + sheetName);
-  // Logger.log('col = ' + col);
 
   if (sheetName == 'сводная таблица') {
-    if (col == 10) {
-      // записать 
-      // Logger.log('запуск priceFixAdd');
+
+    const col = event.range.getColumn();  //Номер столбца
+    const col_SKU_2 = 2, col_Price_10 = 10;
+
+    if (col == col_SKU_2 || col_Price_10 == 10) {
+
       priceFixAdd(event, 'Log изменений листов');
+      column_Price_Paint_SKU();
     }
   }
 }
+
 
 /**
  * добавить запись в низ листа
@@ -40,30 +24,42 @@ function priceFix(event) {
 function priceFixAdd(event, sheet_Log_Name) {
 
   const sheet_Log = SpreadsheetApp.getActive().getSheetByName(sheet_Log_Name);
-
   const sheet_Source = event.source.getActiveSheet();// лист события
-  const sheet_Source_Name = sheet_Source.getName();
-  const col = event.range.getColumn();  //Номер столбца
   const row = event.range.getRow();      //Номер строки
-  const user = event.user;
+  const sku = sheet_Source.getRange(row, 2).getValue();
 
-  const value_New = event.value;            //Новое значение
-  const value_Old = event.oldValue;        //Старое значение
+  // без артикула не фиксирую
 
-  if (value_Old != value_New) {
-    // Дата	Лист_Имя	Строка	Столбец	Было	Стало Пользователь
-    // создать массив, 
-    const date_Formatted = Utilities.formatDate(new Date(), "GMT+3", "yyyy-MM-dd HH:mm:ss");
-    // массив-строка
-    const a2 = [[date_Formatted, sheet_Source_Name, row, col, value_Old, value_New, user]];
-    // ячейку последнюю найти
-    const log_Row = sheet_Log.getDataRange().getLastRow() + 1;
-    // вставить массив на лист
-    sheet_Log.getRange(log_Row, 1, a2.length, a2[0].length).setValues(a2);
+  if (sku.match(/^\d{3}-\d{3}-\d{4}$/) != null) {
+
+    const col = event.range.getColumn();  //Номер столбца
+    const user = event.user;
+
+    const value_New = event.value;            //Новое значение
+    const value_Old = event.oldValue;        //Старое значение
+
+    if (value_Old != value_New) {
+      // Дата	Лист_Имя	Строка	Столбец	Было	Стало Пользователь
+      // создать массив, 
+      const date_Formatted = Utilities.formatDate(new Date(), "GMT+3", "yyyy-MM-dd HH:mm:ss");
+      const sheet_Source_Name = sheet_Source.getName();
+      // массив-строка
+      const a2 = [[date_Formatted, sheet_Source_Name, row, col, value_Old, value_New, user, sku]];
+      // ячейку последнюю найти
+      const log_Row = sheet_Log.getDataRange().getLastRow() + 1;
+      // вставить массив на лист
+      sheet_Log.getRange(log_Row, 1, a2.length, a2[0].length).setValues(a2);
+    }
   }
 }
 
-
+function sku_parse_Test() {
+  var regExp = /^\d{3}-\d{3}-\d{4}$/
+  Logger.log("101-011-0003".match(regExp));
+  Logger.log("101-011-000".match(regExp));
+  Logger.log("нет".match(regExp));
+  Logger.log("".match(regExp));
+}
 
 function selectionDuplicates() {
   // найти строки различающиеся ростами и если разные цены - сообщить пользователю
@@ -110,11 +106,9 @@ function onOpen() {
 
     .addItem('Создать копию книги', 'spreadsheetCopy')
 
-    .addItem('Цена, руб (Без НДС) свежие красным', 'column_Price_Color_Decor')
-
     // .addItem('Нули формат', 'selectionNullFormatted')
 
-    .addSeparator()
+    // .addSeparator()
 
     // .addSubMenu(ui.createMenu('Sub-menu')
 
