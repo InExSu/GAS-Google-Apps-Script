@@ -68,10 +68,9 @@ function range_Cells_clearContent_RegEx(range, regex, repla) {
  * @returns {Array}
  */
 function array_RegEx_Replace(arr, regExp, replacement) {
-  return arr.map(
-    replaceIfMatchesRegex(
-      item(regExp, replacement)),
-    arr);
+  return array.map((element) => {
+    return replaceIfMatchesRegex(element, regExp, replacement);
+  });
 }
 
 /** если значение строка и содержит подстроку, подходящую под 
@@ -120,37 +119,36 @@ function sheet_Links_Activate(sheet) {
       }
     }
   }
-
-
-  function cell_Link_Activate_Test(range) {
-    var cell = SpreadsheetApp.getActive().getSheetByName('Лист32').getRange('B3');
-    cell_Link_Activate(cell);
-  }
-
-  /** 
-   * Сделать ячейке активную ссылку
-   */
-  function cell_Link_Activate(cell) {
-
-    let value = cell.getValue();
-
-    cell.setRichTextValue(SpreadsheetApp.newRichTextValue()
-      .setText(value)
-      .setLinkUrl(value)
-      .build());
-  }
-
-  function columnToLetter_Test() {
-    Logger.log(columnToLetter(27));
-  }
-
-  function columnToLetter(column) {
-    var temp, letter = '';
-    while (column > 0) {
-      temp = (column - 1) % 26;
-      letter = String.fromCharCode(temp + 65) + letter;
-      column = (column - temp - 1) / 26;
-    }
-    return letter;
-  }
 }
+function cell_Link_Activate_Test(range) {
+  var cell = SpreadsheetApp.getActive().getSheetByName('Лист32').getRange('B3');
+  cell_Link_Activate(cell);
+}
+
+/** 
+ * Сделать ячейке активную ссылку
+ */
+function cell_Link_Activate(cell) {
+
+  let value = cell.getValue();
+
+  cell.setRichTextValue(SpreadsheetApp.newRichTextValue()
+    .setText(value)
+    .setLinkUrl(value)
+    .build());
+}
+
+function columnToLetter_Test() {
+  Logger.log(columnToLetter(27));
+}
+
+function columnToLetter(column) {
+  var temp, letter = '';
+  while (column > 0) {
+    temp = (column - 1) % 26;
+    letter = String.fromCharCode(temp + 65) + letter;
+    column = (column - temp - 1) / 26;
+  }
+  return letter;
+}
+
