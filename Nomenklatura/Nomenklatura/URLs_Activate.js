@@ -48,55 +48,56 @@ function range_Cells_clearContent_RegEx(range, regex, repla) {
       range.getValues(),
       regex,
       repla));
-
-  /**
-  * принимает массив, регулярное выражение и строку замены.
-  * Проходом по всем элементам массива, если в элементе есть подстрока, 
-  * соответствующая регулярному выражению, 
-  *   то заменить элемент массива на 
-  *     эту подстроку, 
-  *   иначе 
-  *     repla.
-  * Вернуть обновлённый массив.
+}
+/**
+* принимает массив, регулярное выражение и строку замены.
+* Проходом по всем элементам массива, если в элементе есть подстрока, 
+* соответствующая регулярному выражению, 
+*   то заменить элемент массива на 
+*     эту подстроку, 
+*   иначе 
+*     repla.
+* Вернуть обновлённый массив такого же размера.
   * 
-   * @param {Array} arr 
-   * @param {RegEx} regex 
-   * @param {String} repl 
-   * @returns 
-   */
-  function array_RegEx_Replace(arr, regex, repl) {
-    return arr.map(str => str.match(regex)
-      ? str.match(regex)[0]
-      : repl);
-  }
+ * @param {Array} arr 
+ * @param {String} regExp 
+ * @param {String} replacement 
+ * @returns {Array}
+ */
+function array_RegEx_Replace(arr, regExp, replacement) {
+  return arr.map((item) =>
+    typeof item === 'string' && item.match(regExp)
+      ? item.replace(regExp, replacement)
+      : replacement
+  );
+}
 
-  function sheet_Links_Activate(sheet) {
+function sheet_Links_Activate(sheet) {
 
-    let range = sheet.getDataRange();
-    let a2d = range.getValues();
+  let range = sheet.getDataRange();
+  let a2d = range.getValues();
 
-    let address = '';
-    let cell = '';
-    let value = '';
+  let address = '';
+  let cell = '';
+  let value = '';
 
-    let spread = SpreadsheetApp.getActive();
+  let spread = SpreadsheetApp.getActive();
 
-    for (let row = 0; row < a2d.length; row++) {
+  for (let row = 0; row < a2d.length; row++) {
 
-      if (row % 100 === 0) {
-        spread.toast('Начинаю обрабатывать строки c ' + row + ' по ' + (row + 100) + ' из ' + a2d.length);
-      }
+    if (row % 100 === 0) {
+      spread.toast('Начинаю обрабатывать строки c ' + row + ' по ' + (row + 100) + ' из ' + a2d.length);
+    }
 
-      for (let col = 0; col < a2d[0].length; col++) {
+    for (let col = 0; col < a2d[0].length; col++) {
 
-        value = a2d[row][col].toString();
+      value = a2d[row][col].toString();
 
-        if (value.startsWith('http')) {
+      if (value.startsWith('http')) {
 
-          address = columnToLetter(col + 1) + (row + 1);
-          cell = sheet.getRange(address);
-          cell_Link_Activate(cell);
-        }
+        address = columnToLetter(col + 1) + (row + 1);
+        cell = sheet.getRange(address);
+        cell_Link_Activate(cell);
       }
     }
   }
