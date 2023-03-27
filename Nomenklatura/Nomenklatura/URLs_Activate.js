@@ -29,7 +29,7 @@ function clearNonLinks() {
 function range_Cells_clearContent_RegEx_Test() {
   var sheet = SpreadsheetApp.getActive().getSheetByName('Тест удалить');
   var range = sheet.getRange("A1:B4");
-  range_Cells_clearContent_RegEx(range, /http(s)?:\/\/\S+/gi);
+  range_Cells_clearContent_RegEx(range, /http(s)?:\/\/\S+/gi, '');
 }
 
 /**
@@ -43,21 +43,24 @@ function range_Cells_clearContent_RegEx_Test() {
  */
 function range_Cells_clearContent_RegEx(range, regex, repla) {
 
-  range.setValues(
-    array_RegEx_Replace(
-      range.getValues(),
-      regex,
-      repla));
+  // range.setValues(
+  //   array_RegEx_Replace(
+  //     range.getValues(),
+  //     regex,
+  //     repla));
+  var arr = range.getValues();
+  var arrNew = array_RegEx_Replace(arr, regex, repla);
+  range.setValues(arrNew);
 }
-/**
-* принимает массив, регулярное выражение и строку замены.
+
+/** принимает массив двумерный, регулярное выражение и строку замены.
 * Проходом по всем элементам массива, если в элементе есть подстрока, 
 * соответствующая регулярному выражению, 
 *   то заменить элемент массива на 
 *     эту подстроку, 
 *   иначе 
-*     repla.
-* Вернуть обновлённый массив такого же размера.
+*     replacement.
+* Вернёть обновлённый массив такого же размера.
   * 
  * @param {Array} arr 
  * @param {String} regExp 
@@ -65,11 +68,27 @@ function range_Cells_clearContent_RegEx(range, regex, repla) {
  * @returns {Array}
  */
 function array_RegEx_Replace(arr, regExp, replacement) {
-  return arr.map((item) =>
-    typeof item === 'string' && item.match(regExp)
-      ? item.replace(regExp, replacement)
-      : replacement
-  );
+  return arr.map(
+    replaceIfMatchesRegex(
+      item(regExp, replacement)),
+    arr);
+}
+
+/** если значение строка и содержит подстроку, подходящую под 
+ * регулярное выражение - заменить на подстроку замены иначе - 
+ * оставить без изменений
+ * 
+ * @param {String} inputString 
+ * @param {String} regex 
+ * @param {Stirng} replacementString 
+ * @returns {Stirng}
+ */
+function replaceIfMatchesRegex(inputString, regex, replacementString) {
+  return (typeof inputString !== 'string')
+    ? inputString
+    : inputString.match(regex)
+      ? inputString.replace(regex, replacementString)
+      : inputString;
 }
 
 function sheet_Links_Activate(sheet) {
