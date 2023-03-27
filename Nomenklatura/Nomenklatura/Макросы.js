@@ -63,3 +63,22 @@ function debuggerTest() {
   debugger
   let s = 1;
 }
+
+function Cell_Link() {
+  var spreadsheet = SpreadsheetApp.getActive();
+  spreadsheet.getRange('Y2:AB2').activate();
+  spreadsheet.getRange('Y2:AB2').activate();
+  spreadsheet.getCurrentCell().setRichTextValue(SpreadsheetApp.newRichTextValue()
+    .setText('https://cdn-ru.bitrix24.ru/b6361393/iblock/a57/a57e309be6f642d0166cdd64e09427a2/PDF s GP-7K.jpg')
+    .setTextStyle(0, 95, SpreadsheetApp.newTextStyle()
+      .setForegroundColor('#1155cc')
+      .setUnderline(true)
+      .build())
+    .build());
+};
+
+function cells_URLs_Format_CLIP() {
+  var spread = SpreadsheetApp.getActive();
+  var sheet = spread.getSheetByName('сводная таблица');
+  sheet.getRange('Y:AB').setWrapStrategy(SpreadsheetApp.WrapStrategy.CLIP);
+};

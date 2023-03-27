@@ -1643,3 +1643,57 @@ function dateFormatYMDHMS(d) {
     ("0" + d.getMinutes()).slice(-2) + ":" +
     ("0" + d.getSeconds()).slice(-2);
 }
+
+
+function duplicatesColumnEmail_RUN() {
+  duplicatesColumnEmail('сводная таблица', '1', 'Артикул', /^\d{3}-\d{3}-\d{4}$/,
+    'inna.kuznetsova@zelinskygroup.com', 'mihail.popov@zelinskygroup.com');
+}
+/** 
+ * получает имя листа, номер строки, заголовок столбца, паттерн регулярного выражения, адрес элпочты 1, адрес элпочты 2 и ищет на листе, в строке заголовок столбца, если находит заголовок, то столбец в массив, в массиве ищет дубликаты значений по регулярному выражению, если находит дубликаты, то отправляет их элписьмом на адрес элпочты 1, если не находит заголовок, то отправляет элписьмо на адрес элпочты 2.
+ */
+function duplicatesColumnEmail(sheetName, rowNumber, headerTitle, regexPattern, email1, email2) {
+  // var sheetName = "имя листа";
+  // var rowNumber = "номер строки";
+  // var headerTitle = "заголовок столбца";
+  // var regexPattern = /паттерн регулярного выражения/;
+  // var email1 = "адрес элпочты 1";
+  // var email2 = "адрес элпочты 2";
+
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(sheetName);
+  // getRange(row, column, numRows, numColumns)
+  var headerRow = sheet.getRange(rowNumber, 1, 1, sheet.getLastColumn()).getValues()[0];
+  var columnIndex = headerRow.indexOf(headerTitle) + 1;
+
+  if (columnIndex > 0) {
+    var columnData = sheet.getRange(rowNumber, columnIndex, sheet.getLastRow() - rowNumber + 1).getValues();
+    var uniqueValues = [];
+    var duplicateValues = [];
+    var email = '';
+    var subject = SpreadsheetApp.getActiveSpreadsheet().getName() + ' | ' + sheet.getName();
+    var body = '';
+
+    for (var i = 0; i < columnData.length; i++) {
+      var value = columnData[i][0];
+      if (value !== "") {
+        if (uniqueValues.indexOf(value) === -1) {
+          uniqueValues.push(value);
+        } else if (duplicateValues.indexOf(value) === -1 && value.match(regexPattern)) {
+          duplicateValues.push(value);
+        }
+      }
+    }
+    if (duplicateValues.length > 0) {
+      subject = subject + "Найдены дубликаты в столбце " + headerTitle;
+      body = "Найдены следующие дубликаты в столбце " + headerTitle + ":\n\n" + duplicateValues.join("\n");
+      email = email1;
+    }
+  } else {
+    subject = subject + "Заголовок столбца не найден";
+    body = "Заголовок столбца " + headerTitle + " не найден на листе " + sheetName;
+    email = email2;
+  }
+
+  MailApp.sendEmail(email2, subject, body);
+
+}

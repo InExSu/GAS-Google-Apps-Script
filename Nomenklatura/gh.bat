@@ -1,3 +1,3 @@
 git add .
-git commit -m "bat"
+git commit -m handLocal
 git push

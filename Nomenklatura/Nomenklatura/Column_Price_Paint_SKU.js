@@ -1,4 +1,4 @@
-function column_Price_Paint_SKU(event) {
+function column_Price_Paint_SKU(sheetLog_Name, sheetSKU_Name) {
   // лист лога в массив
   // покрасить столбец цен в общий цвет
   // проходом по массиву столбца артикулов 
@@ -7,15 +7,15 @@ function column_Price_Paint_SKU(event) {
 
   const book = SpreadsheetApp.getActive();
 
-  const sheet_Log = book.getSheetByName('Log изменений листов');
-  const sheet_SKU = book.getSheetByName('сводная таблица');
+  const sheetLog = book.getSheetByName(sheetLog_Name);
+  const sheetSKU = book.getSheetByName(sheetSKU_Name);
 
   // Столбец цен сбрасываю цвет на по умолчанию
-  let range_Column = sheet_SKU.getRange('J:J');
+  let range_Column = sheetSKU.getRange('J:J');
   range_Column.setBackground('#70ad47');
 
-  const a2_SKU = sheet_SKU.getRange('B:B').getValues();
-  let a2_Log = sheet_Log.getDataRange().getValues();
+  const a2_SKU = sheetSKU.getRange('B:B').getValues();
+  let a2_Log = sheetLog.getDataRange().getValues();
 
   // массив лога - строки с датами ненужными удаляю
   date_Left = date_Create(-7, 0, 0);
@@ -37,7 +37,7 @@ function column_Price_Paint_SKU(event) {
 
       if (arrayColumn(a2_Log, column_SKU_7).includes(sku)) {
 
-        sheet_SKU.getRange(row + 1, column_Price_10).setBackground('#FF9C9C');
+        sheetSKU.getRange(row + 1, column_Price_10).setBackground('#FF9C9C');
       }
     }
   }

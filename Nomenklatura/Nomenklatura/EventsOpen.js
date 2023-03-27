@@ -4,16 +4,18 @@ function onEdit(event) {
 
   const sheetName = event.source.getActiveSheet().getName();// лист события
 
+  const col = event.range.getColumn();  //Номер столбца
+
   if (sheetName == 'сводная таблица') {
 
-    const col = event.range.getColumn();  //Номер столбца
     const col_SKU_2 = 2, col_Price_10 = 10;
 
-    if (col == col_SKU_2 || col_Price_10 == 10) {
+    if (col == col_SKU_2 || col == col_Price_10) {
 
       priceFixAdd(event, 'Log изменений листов');
-      column_Price_Paint_SKU();
+      column_Price_Paint_SKU('Log изменений листов', sheetName);
     }
+    Logger.log('Лист ' + sheetName + ', столбец ' + col)
   }
 }
 
@@ -105,6 +107,8 @@ function onOpen() {
     .addItem('Дубликаты', 'selectionDuplicates')
 
     .addItem('Создать копию книги', 'spreadsheetCopy')
+
+    .addItem('Ссылки сделать активными на листе сводная таблица', 'spreadSheet_Sheets_Links_Activate')
 
     // .addItem('Нули формат', 'selectionNullFormatted')
 
