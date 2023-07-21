@@ -1711,3 +1711,32 @@ function assert(condition, message) {
     throw new Error(message);
   }
 }
+
+function array2DColumnNumberByValueTest() {
+  const testData = [
+    ['apple', 'banana', 'cherry'],
+    ['test', 'test', 'test'],
+    ['dog', 'cat', 'hamster']
+  ];
+  const needle = 'cherry';
+  const row = 0;
+  const column = array2DColumnNumberByValye(testData, row, needle);
+  assert(column === 2,"Ожидал  2, получил " . column);
+}
+/** 
+ * в строке массива полученного getValues
+ * найти needle и вернуть номер столбца или -1
+ * @param {Array} a2d - Двумерный массив.
+ * @param {number} row - Индекс строки, в которой искать needle.
+ * @param {*} needle - Значение, которое нужно найти в строке массива.
+ * @returns {number} - Номер столбца в строке массива или -1.
+ */
+function array2DColumnNumberByValye(a2d, row, needle) {
+  const values = a2d[row];
+  for (let i = 0; i < values.length; i++) {
+    if (values[i] === needle) {
+      return i;
+    }
+  }
+  return -1;
+}
