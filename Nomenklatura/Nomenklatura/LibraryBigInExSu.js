@@ -1697,3 +1697,17 @@ function duplicatesColumnEmail(sheetName, rowNumber, headerTitle, regexPattern, 
   MailApp.sendEmail(email2, subject, body);
 
 }
+
+/**
+ * Проверяет, что заданное условие истинно.
+ * Если условие не выполняется, выбрасывает ошибку с заданным сообщением.
+ *
+ * @param {boolean} condition - Условие, которое должно быть истинным.
+ * @param {string} message - Сообщение об ошибке, которое будет выведено, если условие не выполнено.
+ * @throws {Error} Если условие не выполнено.
+ */
+function assert(condition, message) {
+  if (!condition) {
+    throw new Error(message);
+  }
+}
